@@ -1,3 +1,5 @@
+#include <signal.h>
+
 #include <fstream>
 
 #include <boost/filesystem.hpp>
@@ -27,6 +29,15 @@ void async_read(bool &stop){
     stop   =   true;
 }
 
+std::ostream*   gLogger         =   NULL;
+bool*           gStopCondition  =   NULL;
+
+void signal_catcher(int sgnum)
+{
+    *gLogger << "caugth signal " << sgnum << std::endl;
+    *gStopCondition =   true;
+}
+
 
 
 int main(int argc, char* argv[]) {
@@ -43,6 +54,7 @@ int main(int argc, char* argv[]) {
     }
 
     bool                isTimeToStop(false);
+    gStopCondition  =   &isTimeToStop;
 
 
     std::ostream    *errorlog(&std::cout);
@@ -54,6 +66,39 @@ int main(int argc, char* argv[]) {
             need_delete =   true;
         }
     }
+
+    gLogger =   errorlog;
+
+    static const int            kHandledSignals[]   =   { SIGINT
+                                                        , SIGQUIT
+                                                        , SIGTERM };
+
+    static const unsigned int   kHandledSignalsSize =   sizeof(kHandledSignals) / sizeof(kHandledSignals[0]);
+
+    unsigned int    sigCount    =   0;
+    bool            isOk        =   true;
+
+    while ((true == isOk) && (sigCount != kHandledSignalsSize)) {
+        int             sigNum  =   kHandledSignals[sigCount];
+        sighandler_t    oldOne  =   signal(sigNum, signal_catcher);
+
+        if (SIG_ERR == oldOne) {
+            isOk    =   false;
+            (*errorlog) << "cannot set signal handler for " << sigNum << std::endl;
+            continue;
+        }
+
+        //does not brake signal handling of parent process
+        if (SIG_IGN == oldOne) {
+            signal(sigNum, SIG_IGN);
+        }
+        ++sigCount;
+    }
+
+    if (false == isOk) {
+        return EXIT_FAILURE;
+    }
+
 
     errorlog->imbue(std::locale(std::cout.getloc(), &facet));
 
