@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 
 
 #include <boost/program_options.hpp>
@@ -11,7 +12,77 @@
 #include <version.h>
 #include <config_const.h>
 
+struct TWorkingModeToStringMapperCell {
+public:
+    CWebSpiderOptions::EWorkingMode Value;
+    const char*                     Repr;
+};
 
+
+static const TWorkingModeToStringMapperCell     kWorkingModeMapper[]    =   { {CWebSpiderOptions::EDebugWorkingMode,       "debug"}
+                                                                            , {CWebSpiderOptions::EInteractiveWorkingMode, "interactive"}
+                                                                            , {CWebSpiderOptions::EDaemonWorkingMode,       "daemon"} };
+static const unsigned int                       kWorkingModeMapperSize  =   sizeof(kWorkingModeMapper) / sizeof(kWorkingModeMapper[0]);
+static const TWorkingModeToStringMapperCell*    kWorkingModeMapperBegin =   kWorkingModeMapper;
+static const TWorkingModeToStringMapperCell*    kWorkingModeMapperEnd   =   kWorkingModeMapper + kWorkingModeMapperSize;
+
+struct TByModeFinder {
+public:
+    TByModeFinder(CWebSpiderOptions::EWorkingMode mode)
+    : Mode(mode)
+    {}
+
+    bool operator () (TWorkingModeToStringMapperCell cell)
+    {
+        return cell.Value == Mode;
+    }
+
+private:
+    CWebSpiderOptions::EWorkingMode Mode;
+};
+
+const char* CWebSpiderOptions::WorkingModeToString(CWebSpiderOptions::EWorkingMode mode)
+{
+
+    const TWorkingModeToStringMapperCell* pos =   std::find_if( kWorkingModeMapperBegin
+                                                              , kWorkingModeMapperEnd
+                                                              , TByModeFinder(mode) );
+
+    if (kWorkingModeMapperEnd == pos) {
+        return "unknown";
+    }
+
+    return pos->Repr;
+}
+
+struct TByReprFinder {
+public:
+    TByReprFinder(const char* mode)
+    : Mode(mode)
+    {}
+
+    bool operator () (TWorkingModeToStringMapperCell cell)
+    {
+        return 0 == strcmp(cell.Repr, Mode);
+    }
+
+private:
+    const char* Mode;
+};
+
+CWebSpiderOptions::EWorkingMode CWebSpiderOptions::WorkingModeFromString(const char* mode)
+{
+
+    const TWorkingModeToStringMapperCell* pos =   std::find_if( kWorkingModeMapperBegin
+                                                              , kWorkingModeMapperEnd
+                                                              , TByReprFinder(mode) );
+
+    if (kWorkingModeMapperEnd == pos) {
+        return EUnknownWorkingMode;
+    }
+
+    return pos->Value;
+}
 
 
 CWebSpiderOptions::CWebSpiderOptions()
@@ -27,7 +98,7 @@ CWebSpiderOptions::CWebSpiderOptions()
 , m_bSaveHistory(true)
 , m_bCollectLinks(false)
 , m_bOneServer(false)
-, m_bAskAfterFetch(false)
+, m_eWorkingMode(EInteractiveWorkingMode)
 
 , m_iLevel(0)
 , m_iConnectionTimeoutInSeconds(0)
@@ -37,7 +108,22 @@ CWebSpiderOptions::CWebSpiderOptions()
 , m_sOptionsFile("")
 
 {}
+void validate(boost::any& v, const std::vector<std::string>& values, CWebSpiderOptions::EWorkingMode*, int)
+{
+    CWebSpiderOptions::EWorkingMode mode;
 
+    if (1 != values.size()) {
+        throw boost::program_options::validation_error(boost::program_options::validation_error::multiple_values_not_allowed);
+    }
+
+    mode    =   CWebSpiderOptions::WorkingModeFromString(values[0].c_str());
+
+    if (CWebSpiderOptions::EUnknownWorkingMode == mode) {
+        throw boost::program_options::validation_error(boost::program_options::validation_error::invalid_option_value);
+    }
+
+    v   =   mode;
+}
 
 bool CWebSpiderOptions::readFromCmdLine(int argc, char* argv[])
 {
@@ -65,10 +151,8 @@ bool CWebSpiderOptions::readFromCmdLine(int argc, char* argv[])
             (kReadTimeoutInSecondsAttrCmd.c_str(), boost::program_options::value<unsigned int> (&m_iReadTimeoutInSeconds)->default_value(2), "read timeout")
             (kMaxConnectionsAttrCmd.c_str(), boost::program_options::value<unsigned int> (&m_iMaxConnections)->default_value(20), "qantity of simulteniously open connections")
 
-
-            (kCollectLinksAttrCmd.c_str(), "collect links")
+            (kWorkingModeAttrCmd.c_str(), boost::program_options::value<EWorkingMode> (&m_eWorkingMode)->default_value(EInteractiveWorkingMode), "working modes - debug, interactive or daemon")
             (kSaveHistoryAttrCmd.c_str(),  "do not save links after stop")
-            (kAskAfterFetchAttrCmd.c_str(),  "ask after fetching")
 
             (kOptionsFileAttrCmd.c_str(), boost::program_options::value<std::string>(&m_sOptionsFile)->default_value(""), "file with configurations")
             ;
@@ -92,14 +176,9 @@ bool CWebSpiderOptions::readFromCmdLine(int argc, char* argv[])
         return false;
     }
 
-    if (vm.count(kAskAfterFetchAttr)) {
-        m_bAskAfterFetch =   true;
-    }
-
     if (vm.count(kSavePagesAttr)) {
         m_bSavePages  =   false;
     }
-
 
     if (vm.count(kOneServerAttr)) {
         m_bOneServer  =   true;
@@ -133,7 +212,6 @@ bool CWebSpiderOptions::readFromFile(const std::string& path)
     options.read(file);
 
 
-    options.get(kAskAfterFetchAttr, m_bAskAfterFetch);
     options.get(kCollectLinksAttr, m_bCollectLinks);
     options.get(kConnectionTimeoutInSecondsAttr, m_iConnectionTimeoutInSeconds);
     options.get(kErrorLogPathAttr, m_sErrorLogPath);

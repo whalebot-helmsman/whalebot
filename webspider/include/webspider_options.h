@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   webspider_options.h
  * Author: hotdox
  *
@@ -14,6 +14,15 @@
 class CWebSpiderOptions {
 
 public:
+    enum EWorkingMode {
+        EDebugWorkingMode = 0,
+        EInteractiveWorkingMode,
+        EDaemonWorkingMode,
+        EUnknownWorkingMode
+    };
+
+    static const char* WorkingModeToString(EWorkingMode mode);
+    static EWorkingMode WorkingModeFromString(const char* mode);
 
     //fields
     std::string     m_sSite;
@@ -28,8 +37,8 @@ public:
     bool            m_bSaveHistory;
     bool            m_bCollectLinks;
     bool            m_bOneServer;
-    
-    bool            m_bAskAfterFetch;
+
+    EWorkingMode    m_eWorkingMode;
 
     size_t          m_iLevel;
     unsigned int    m_iConnectionTimeoutInSeconds;
@@ -37,8 +46,8 @@ public:
     unsigned int    m_iMaxConnections;
 
     std::string     m_sOptionsFile;
-    
-    
+
+
     CWebSpiderOptions();
     bool    readFromCmdLine(int argc, char* argv[]);
     bool    readFromFile(const std::string& path);

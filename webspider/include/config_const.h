@@ -14,7 +14,7 @@ const std::string kReadTimeoutInSecondsAttr         =    "read-timeout";
 const std::string kMaxConnectionsAttr               =    "max-connections";
 const std::string kCollectLinksAttr                 =    "collect-links";
 const std::string kSaveHistoryAttr                  =    "dont-save-links";
-const std::string kAskAfterFetchAttr                =    "ask";
+const std::string kWorkingModeAttr                  =    "working-mode";
 const std::string kOptionsFileAttr                  =    "file";
 
 const std::string kSavePagesAttrCmd                     =    kSavePagesAttr                     + ",d";
@@ -31,5 +31,5 @@ const std::string kReadTimeoutInSecondsAttrCmd          =    kReadTimeoutInSecon
 const std::string kMaxConnectionsAttrCmd                =    kMaxConnectionsAttr                + ",M";
 const std::string kCollectLinksAttrCmd                  =    kCollectLinksAttr                  + ",c";
 const std::string kSaveHistoryAttrCmd                   =    kSaveHistoryAttr                   + ",D";
-const std::string kAskAfterFetchAttrCmd                 =    kAskAfterFetchAttr                 + ",a";
+const std::string kWorkingModeAttrCmd                   =    kWorkingModeAttr                   + ",w";
 const std::string kOptionsFileAttrCmd                   =    kOptionsFileAttr                   + ",F";

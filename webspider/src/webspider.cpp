@@ -110,7 +110,7 @@ int main(int argc, char* argv[]) {
             http_errors(0);
 
 
-    if(!options.m_bAskAfterFetch){
+    if(CWebSpiderOptions::EInteractiveWorkingMode == options.m_eWorkingMode){
         boost::thread   t(boost::bind(async_read, boost::ref(isTimeToStop)));
         std::cout<<"*Start working press [ENTER] to stop"<<std::endl;
     }
@@ -141,7 +141,7 @@ int main(int argc, char* argv[]) {
         (*errorlog) << "speed " <<(link_counter - 1)/time_consumption<<" links/sec"<<std::endl;
         (*errorlog) << "we have "<<http_errors<<" errors" <<std::endl;
 
-        if(options.m_bAskAfterFetch){
+        if(CWebSpiderOptions::EDebugWorkingMode == options.m_eWorkingMode){
             char    c;
             std::cout<<"continue?(y/n)"<<std::endl;
             std::cin>>c;
