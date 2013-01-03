@@ -50,7 +50,7 @@ int main(int argc, char* argv[]) {
     CWebSpiderOptions   options;
 
     if (not options.readFromCmdLine(argc, argv)) {
-        return 0;
+        return EXIT_FAILURE;
     }
 
     bool                isTimeToStop(false);
@@ -333,5 +333,5 @@ int main(int argc, char* argv[]) {
 
 //    ne_sock_exit();
 
-    return 0;
+    return EXIT_SUCCESS;
 }
