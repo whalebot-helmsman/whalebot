@@ -1,0 +1,7 @@
+9a10
+> #ifdef WIN32
+10a12,15
+> #else
+> #define TCHAR char
+> #endif
+> 

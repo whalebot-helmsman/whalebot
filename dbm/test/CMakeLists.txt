@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 2.6)
+project(dbm_test)
+include_directories("../orm/")
+aux_source_directory("./" SOURCES)
+add_executable( dbm_test ${SOURCES} )
+target_link_libraries( dbm_test gtest )

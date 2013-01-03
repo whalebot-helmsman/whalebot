@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 2.6)
+project(libstring_parse)
+include_directories("./include")
+aux_source_directory("./src" SOURCES)
+list ( APPEND CMAKE_CXX_FLAGS "-Wall")
+set(LIBRARY_OUTPUT_PATH "./bin/")
+add_library(string_parse STATIC ${SOURCES})

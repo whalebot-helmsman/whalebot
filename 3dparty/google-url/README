@@ -1,0 +1,6 @@
+This is collection of files to build google url parsing library
+(http://code.google.com/p/google-url/) on linux systems based on 
+http://code.google.com/p/python-google-url/wiki/HowToBuildGoogleUrlWithLinux
+Just run gurl.sh
+
+
