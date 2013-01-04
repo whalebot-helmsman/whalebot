@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
 
  //   ne_sock_init();
 
-    boost::posix_time::time_facet facet("%T");
+
 
 
     CWebSpiderOptions   options;
@@ -100,7 +100,7 @@ int main(int argc, char* argv[]) {
     }
 
 
-    errorlog->imbue(std::locale(std::cout.getloc(), &facet));
+    errorlog->imbue(std::locale(errorlog->getloc(), new boost::posix_time::time_facet("%T")));
 
     CFilenameHandler    files(options.m_sOutput);
     COneFetcher         fetcher;
