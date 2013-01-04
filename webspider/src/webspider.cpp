@@ -8,6 +8,7 @@
 #include <boost/date_time/posix_time/time_formatters.hpp>
 #include <boost/date_time/posix_time/posix_time_io.hpp>
 #include <boost/date_time/time_facet.hpp>
+#include <boost/scoped_ptr.hpp>
 
 
 //#include <neon/ne_session.h>
@@ -57,13 +58,13 @@ int main(int argc, char* argv[]) {
     gStopCondition  =   &isTimeToStop;
 
 
-    std::ostream    *errorlog(&std::cout);
-    bool            need_delete(false);
+    std::ostream                        *errorlog(&std::cout);
+    boost::scoped_ptr<std::ostream>     logGuard(NULL);
     if (!options.m_sErrorLogPath.empty()) {
         std::ofstream *file = new std::ofstream(options.m_sErrorLogPath.c_str());
+        logGuard.reset(file);
         if (file->is_open()){
             errorlog    =   file;
-            need_delete =   true;
         }
     }
 
@@ -112,6 +113,7 @@ int main(int argc, char* argv[]) {
     else {
         factory =   new CLinkFactory();
     }
+    boost::scoped_ptr<ILinkFactory> factoryGuard(factory);
 
     CFilterList     filters;
     CLinkBuffer     work_front;
@@ -324,12 +326,6 @@ int main(int argc, char* argv[]) {
     if (boost::filesystem::exists(options.m_sTmpFilePath)) {
         boost::filesystem::remove(options.m_sTmpFilePath);
     }
-
-    if(need_delete) {
-        delete errorlog;
-    }
-
-    delete factory;
 
 //    ne_sock_exit();
 
