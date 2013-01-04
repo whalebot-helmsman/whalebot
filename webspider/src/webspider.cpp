@@ -18,6 +18,7 @@
 #include <link_extractor.h>
 #include <header_parser.h>
 #include <filename_handler.h>
+#include <uuid_page_storage.hpp>
 #include <filters.h>
 #include <link.h>
 #include <ilink_factory.h>
@@ -103,8 +104,15 @@ int main(int argc, char* argv[]) {
 
     errorlog->imbue(std::locale(errorlog->getloc(), new boost::posix_time::time_facet("%T")));
 
-    CFilenameHandler    files(options.m_sOutput);
-    COneFetcher         fetcher;
+    IPageStorage*                   storage =   NULL;
+    if (true == options.m_bIsUseUuidStorage) {
+        storage =   new CUuidPageStorage(options.m_sOutput);
+    }
+    else {
+        storage =   new CFilenameHandler(options.m_sOutput);
+    }
+    boost::scoped_ptr<IPageStorage> storageGuard(storage);
+    COneFetcher                     fetcher;
 
     ILinkFactory*       factory(0);
     if (options.m_bCollectLinks) {
@@ -271,7 +279,7 @@ int main(int argc, char* argv[]) {
 
 
         if(options.m_bSavePages){
-            if (!files.createPath(next.getServer(), next.getUri(), ext, filepath)) {
+            if (!storage->createPath(next.getServer(), next.getUri(), ext, filepath)) {
                 (*errorlog) << "\t\tcouldnt create dir for " << filepath << std::endl;
                 continue;
             }

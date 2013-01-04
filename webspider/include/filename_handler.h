@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   FilenameHandler.h
  * Author: hotdox
  *
@@ -8,12 +8,15 @@
 #ifndef _FILENAMEHANDLER_H
 #define	_FILENAMEHANDLER_H
 
-#include <string>
+#include "ipage_storage.hpp"
 
-class CFilenameHandler{
+class CFilenameHandler : public IPageStorage {
 public:
-            CFilenameHandler(const std::string &base_dir);
-    bool    createPath(std::string server, std::string uri, std::string const &ext, std::string &filename   )const;
+    CFilenameHandler(const std::string &base_dir);
+    bool createPath( std::string server
+                   , std::string uri
+                   , std::string const &ext
+                   , std::string &filename );
 private:
     std::string m_baseDir;
 

@@ -10,11 +10,12 @@ CFilenameHandler::CFilenameHandler(const std::string &base_dir)
     if(m_baseDir[m_baseDir.size() - 1] != '/')
         m_baseDir  +=  "/";
 }
-bool CFilenameHandler::createPath(std::string server, std::string uri, std::string const &ext, std::string &filename)const {
+bool CFilenameHandler::createPath(std::string server, std::string uri, std::string const &ext, std::string &filename)
+{
     bool        ret(false);
     std::string name("index.html");
 
-    
+
 
     filename    =   m_baseDir;
     filename    +=   server;
@@ -41,7 +42,7 @@ bool CFilenameHandler::createPath(std::string server, std::string uri, std::stri
             name        =   uri.substr(pos + 1);
             filename    +=  uri.substr(0, pos + 1);
         }
-        
+
         //add extension to name
         std::string ext_(".");
         ext_    +=  ext;
@@ -60,7 +61,7 @@ bool CFilenameHandler::createPath(std::string server, std::string uri, std::stri
             name    +=  ext_;
         }
 
- 
+
         ret =   ((boost::filesystem::exists(filename))
                 or
                 (boost::filesystem::create_directories(filename)));
@@ -68,12 +69,12 @@ bool CFilenameHandler::createPath(std::string server, std::string uri, std::stri
         if (*filename.rbegin() != '/') {
             filename    +=  '/';
         }
-        
+
         filename    +=  name;
 
 
     }
-    
+
     return ret;
 }
 

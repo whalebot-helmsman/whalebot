@@ -16,6 +16,7 @@ const std::string kCollectLinksAttr                 =    "collect-links";
 const std::string kSaveHistoryAttr                  =    "dont-save-links";
 const std::string kWorkingModeAttr                  =    "working-mode";
 const std::string kOptionsFileAttr                  =    "file";
+const std::string kStorageAttr                      =    "storage";
 
 const std::string kSavePagesAttrCmd                     =    kSavePagesAttr                     + ",d";
 const std::string kOneServerAttrCmd                     =    kOneServerAttr                     + ",o";
@@ -33,3 +34,4 @@ const std::string kCollectLinksAttrCmd                  =    kCollectLinksAttr  
 const std::string kSaveHistoryAttrCmd                   =    kSaveHistoryAttr                   + ",D";
 const std::string kWorkingModeAttrCmd                   =    kWorkingModeAttr                   + ",w";
 const std::string kOptionsFileAttrCmd                   =    kOptionsFileAttr                   + ",F";
+const std::string kStorageAttrCmd                       =    kStorageAttr                       + ",S";

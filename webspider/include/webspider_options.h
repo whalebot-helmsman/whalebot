@@ -37,6 +37,7 @@ public:
     bool            m_bSaveHistory;
     bool            m_bCollectLinks;
     bool            m_bOneServer;
+    bool            m_bIsUseUuidStorage;
 
     EWorkingMode    m_eWorkingMode;
 

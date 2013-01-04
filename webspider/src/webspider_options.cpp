@@ -98,6 +98,7 @@ CWebSpiderOptions::CWebSpiderOptions()
 , m_bSaveHistory(true)
 , m_bCollectLinks(false)
 , m_bOneServer(false)
+, m_bIsUseUuidStorage(false)
 , m_eWorkingMode(EInteractiveWorkingMode)
 
 , m_iLevel(0)
@@ -135,6 +136,7 @@ bool CWebSpiderOptions::readFromCmdLine(int argc, char* argv[])
 
             ("site,s", boost::program_options::value<std::string> (&m_sSite)->default_value(""), "seed uri")
 
+            (kStorageAttrCmd.c_str(), "is use uuid-based page storage engine with db file")
             (kSavePagesAttrCmd.c_str(), "dont save fetched pages")
             (kOneServerAttrCmd.c_str(), "fetch only from one server")
             (kLinkFilterFileAttrCmd.c_str(), boost::program_options::value<std::string> (&m_sLinkFilterFile)->default_value(""), "file with words to link filter")
@@ -178,6 +180,10 @@ bool CWebSpiderOptions::readFromCmdLine(int argc, char* argv[])
 
     if (vm.count(kSavePagesAttr)) {
         m_bSavePages  =   false;
+    }
+
+    if (vm.count(kStorageAttr)) {
+        m_bIsUseUuidStorage  =   true;
     }
 
     if (vm.count(kOneServerAttr)) {
