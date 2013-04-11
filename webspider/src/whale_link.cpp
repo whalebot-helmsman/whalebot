@@ -52,7 +52,7 @@ bool CLink::isValid()const{
     return m_tGurl.is_valid();
 }
 void CLink::nil(){
-    m_tGurl ==  GURL::EmptyGURL();
+    m_tGurl =  GURL::EmptyGURL();
     m_sCookie.clear();
     m_sCookieForCut.clear();
 }
@@ -81,7 +81,7 @@ std::ostream& operator<<(std::ostream& s,  CLink const & t){
 
 std::istream& operator>>(std::istream& s,  CLink& t){
     t.nil();
-    
+
     std::string host("");
     std::string req("");
 
@@ -91,13 +91,13 @@ std::istream& operator>>(std::istream& s,  CLink& t){
 
     if(not std::getline(s, req)){
         return s;
-    }    
+    }
 
 
 
     t.setGurl(GURL(host + req));
 
-    std::string cookie("");    
+    std::string cookie("");
 
     if(std::getline(s, cookie)){
         t.setCookie(cookie);
