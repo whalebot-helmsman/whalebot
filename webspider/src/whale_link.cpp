@@ -108,5 +108,6 @@ std::istream& operator>>(std::istream& s,  CLink& t){
 }
 
 bool CLink::operator==(CLink const& another)const{
-    return (m_tGurl == another.m_tGurl);
+    return (  (m_tGurl.PathForRequest() == another.m_tGurl.PathForRequest())
+           && (m_tGurl.host() == another.m_tGurl.host()) );
 }
