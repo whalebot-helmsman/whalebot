@@ -4,11 +4,11 @@ project(webspider)
 find_package(Boost 1.37 REQUIRED filesystem system thread program_options date_time)
 find_package(Htmlcxx REQUIRED)
 
-include_directories( "./include"
-                     "../statsem_string/include"
-                     "../3dparty/google-url"
-                     "../3dparty/google-url/googleurl"
-                     "../3dparty/google-url/googleurl/src"
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/include
+                     ${WHALEBOT_SRC_ROOT}/statsem_string/include
+                     ${WHALEBOT_SRC_ROOT}/3dparty/google-url
+                     ${WHALEBOT_SRC_ROOT}/3dparty/google-url/googleurl
+                     ${WHALEBOT_SRC_ROOT}/3dparty/google-url/googleurl/src
                      ${Boost_INCLUDE_DIRS}
                      ${HTMLCXX_INCLUDE_DIRS} )
 
