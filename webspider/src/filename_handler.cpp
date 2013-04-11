@@ -33,7 +33,7 @@ bool CFilenameHandler::createPath(std::string server, std::string uri, std::stri
         boost::replace_all(uri, "=", "_");
 
         //generate name
-        if((*uri.rbegin()=='/')){
+        if(*uri.rbegin()=='/') {
             //only directory
             filename    +=  uri;
         }else{
