@@ -3,14 +3,6 @@ project(webspider)
 
 find_package(Boost 1.37 REQUIRED filesystem system thread program_options date_time)
 
-#icu
-find_path( ICU_INCLUDE_DIR
-           NAMES unicode/utypes.h )
-
-
-find_library( ICU_LIBRARY
-              NAMES icuuc )
-
 #htmlcxx
 find_library ( HTMLCXX_LIBRARY  "htmlcxx" )
 
