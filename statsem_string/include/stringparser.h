@@ -18,7 +18,7 @@ public:
     }
 
     template<class T>bool getElement(T &x, size_t i = 0){
-        bool        ret;
+        bool        ret =   false;
         std::string tmp;
 
         if(CParserBase::getElement(i, tmp)){
