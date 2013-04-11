@@ -25,4 +25,4 @@ list ( APPEND SOURCES "./googleurl/base/string16.cc")
 list ( APPEND CMAKE_CXX_FLAGS "-Wno-deprecated")
 
 add_library(gurl STATIC ${SOURCES})
-target_link_libraries(gurl $ICU_LIBRARIES)
+target_link_libraries(gurl ${ICU_LIBRARIES})

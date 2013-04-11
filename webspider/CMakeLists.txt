@@ -2,9 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 project(webspider)
 
 find_package(Boost 1.37 REQUIRED filesystem system thread program_options date_time)
-
-#htmlcxx
-find_library ( HTMLCXX_LIBRARY  "htmlcxx" )
+find_package(Htmlcxx REQUIRED)
 
 include_directories( "./include"
                      "../statsem_string/include"
@@ -12,11 +10,7 @@ include_directories( "./include"
                      "../3dparty/google-url/googleurl"
                      "../3dparty/google-url/googleurl/src"
                      ${Boost_INCLUDE_DIRS}
-                     ${ICU_INCLUDE_DIR} )
-
-link_directories ( ${Boost_LIBRARY_DIRS}
-                   "../statsem_string/bin"
-                   "../3dparty/google-url" )
+                     ${HTMLCXX_INCLUDE_DIRS} )
 
 aux_source_directory("./src/" SOURCES)
 
