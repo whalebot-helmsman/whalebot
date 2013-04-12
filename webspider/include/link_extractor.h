@@ -1,7 +1,7 @@
 #ifndef _LINK_EXTRACTOR_H_
 #define _LINK_EXTRACTOR_H_
 
-#include <iterator>
+#include <vector>
 #include <iostream>
 #include <string>
 
@@ -20,12 +20,14 @@ public:
     :m_out(out) {}
 
     void extract(std::istream &in) {
-        std::string buff("");
-        std::istreambuf_iterator<char> walker(in),
-                stop;
-        while (walker != stop) {
-            buff += *walker;
-            ++walker;
+        static const std::streamsize    kMaxReadBufferSize =   1024;
+        std::string         buff("");
+        std::vector<char>   readBuff(kMaxReadBufferSize, '\0');
+
+        std::streamsize read    =   1;
+        while ((0 != read) && (in)) {
+            read    =   in.readsome(&readBuff[0], kMaxReadBufferSize);
+            buff.append(&readBuff[0], read);
         }
 
         parse(buff);
