@@ -39,12 +39,17 @@ public:
 protected:
 
     void foundTag(htmlcxx::HTML::Node node, bool isEnd) {
-        if (node.tagName() == "a") {
-            node.parseAttributes();
-            std::pair<bool, std::string > res(node.attribute("href"));
-            if (res.first) {
-                m_out.pushLink(htmlcxx::HTML::decode_entities(res.second));
-            }
+        if ((node.tagName() != "a") && (node.tagName() != "A")) {
+            return;
+        }
+
+        node.parseAttributes();
+        std::pair<bool, std::string>    res(node.attribute("href"));
+        if (false == res.first) {
+            res =   node.attribute("HREF");
+        }
+        if (false != res.first) {
+            m_out.pushLink(htmlcxx::HTML::decode_entities(res.second));
         }
     }
 private:
