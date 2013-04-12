@@ -62,14 +62,14 @@ bool CFilenameHandler::createPath(std::string server, std::string uri, std::stri
         }
 
 
-        ret =   ((boost::filesystem::exists(filename))
-                or
-                (boost::filesystem::create_directories(filename)));
-
-        if (*filename.rbegin() != '/') {
-            filename    +=  '/';
+        while (*filename.rbegin() == '/') {
+            filename.erase(filename.end() - 1);
         }
 
+        ret =   boost::filesystem::exists(filename);
+        ret |=  boost::filesystem::create_directories(filename);
+
+        filename    +=  '/';
         filename    +=  name;
 
 
