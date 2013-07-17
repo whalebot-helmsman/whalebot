@@ -101,11 +101,6 @@ CWebSpiderOptions::CWebSpiderOptions()
 , m_bIsUseUuidStorage(false)
 , m_eWorkingMode(EInteractiveWorkingMode)
 
-, m_iLevel(0)
-, m_iConnectionTimeoutInSeconds(0)
-, m_iReadTimeoutInSeconds(0)
-, m_iMaxConnections(0)
-
 , m_sOptionsFile("")
 
 , m_iWaitAfterFetchInMicroseconds(0)
@@ -149,11 +144,6 @@ bool CWebSpiderOptions::readFromCmdLine(int argc, char* argv[])
 
             (kUsedLinksPathAttrCmd.c_str(), boost::program_options::value<std::string> (&m_sUsedLinksPath)->default_value("usedlinks.txt"), "path to used links file")
             (kFutureLinksPathAttrCmd.c_str(), boost::program_options::value<std::string> (&m_sFutureLinksPath)->default_value("futurelinks.txt"), "path future links file")
-
-            (kConnectionTimeoutInSecondsAttrCmd.c_str(), boost::program_options::value<unsigned int> (&m_iConnectionTimeoutInSeconds)->default_value(5), "connection timeout")
-            (kWaitAfterAttrCmd.c_str(), boost::program_options::value<unsigned int> (&m_iWaitAfterFetchInMicroseconds)->default_value(0), "wait after fetched page")
-            (kReadTimeoutInSecondsAttrCmd.c_str(), boost::program_options::value<unsigned int> (&m_iReadTimeoutInSeconds)->default_value(2), "read timeout")
-            (kMaxConnectionsAttrCmd.c_str(), boost::program_options::value<unsigned int> (&m_iMaxConnections)->default_value(20), "qantity of simulteniously open connections")
 
             (kWorkingModeAttrCmd.c_str(), boost::program_options::value<EWorkingMode> (&m_eWorkingMode)->default_value(EInteractiveWorkingMode), "working modes - debug, interactive or daemon")
             (kSaveHistoryAttrCmd.c_str(),  "do not save links after stop")
@@ -221,15 +211,12 @@ bool CWebSpiderOptions::readFromFile(const std::string& path)
 
 
     options.get(kCollectLinksAttr, m_bCollectLinks);
-    options.get(kConnectionTimeoutInSecondsAttr, m_iConnectionTimeoutInSeconds);
     options.get(kErrorLogPathAttr, m_sErrorLogPath);
     options.get(kFutureLinksPathAttr, m_sFutureLinksPath);
     options.get(kLevelAttr, m_iLevel);
     options.get(kLinkFilterFileAttr, m_sLinkFilterFile);
-    options.get(kMaxConnectionsAttr, m_iMaxConnections);
     options.get(kOneServerAttr, m_bOneServer);
     options.get(kOutputAttr, m_sOutput);
-    options.get(kReadTimeoutInSecondsAttr, m_iReadTimeoutInSeconds);
     options.get(kSaveHistoryAttr, m_bSaveHistory);
     options.get(kSavePagesAttr, m_bSavePages);
     options.get(kTmpFilePathAttr, m_sTmpFilePath);

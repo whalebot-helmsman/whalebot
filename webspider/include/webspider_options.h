@@ -42,9 +42,6 @@ public:
     EWorkingMode    m_eWorkingMode;
 
     size_t          m_iLevel;
-    unsigned int    m_iConnectionTimeoutInSeconds;
-    unsigned int    m_iReadTimeoutInSeconds;
-    unsigned int    m_iMaxConnections;
 
     std::string     m_sOptionsFile;
 
