@@ -1,4 +1,4 @@
-set(TITLE libparserutils)
+set(TITLE parserutils)
 
 include_directories( include/parserutils )
 include_directories( include )
