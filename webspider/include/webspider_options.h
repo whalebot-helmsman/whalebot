@@ -48,6 +48,7 @@ public:
 
     std::string     m_sOptionsFile;
 
+    unsigned int    m_iWaitAfterFetchInMicroseconds;
 
     CWebSpiderOptions();
     bool    readFromCmdLine(int argc, char* argv[]);

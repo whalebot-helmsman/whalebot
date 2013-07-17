@@ -108,6 +108,7 @@ CWebSpiderOptions::CWebSpiderOptions()
 
 , m_sOptionsFile("")
 
+, m_iWaitAfterFetchInMicroseconds(0)
 {}
 void validate(boost::any& v, const std::vector<std::string>& values, CWebSpiderOptions::EWorkingMode*, int)
 {
@@ -150,6 +151,7 @@ bool CWebSpiderOptions::readFromCmdLine(int argc, char* argv[])
             (kFutureLinksPathAttrCmd.c_str(), boost::program_options::value<std::string> (&m_sFutureLinksPath)->default_value("futurelinks.txt"), "path future links file")
 
             (kConnectionTimeoutInSecondsAttrCmd.c_str(), boost::program_options::value<unsigned int> (&m_iConnectionTimeoutInSeconds)->default_value(5), "connection timeout")
+            (kWaitAfterAttrCmd.c_str(), boost::program_options::value<unsigned int> (&m_iWaitAfterFetchInMicroseconds)->default_value(0), "wait after fetched page")
             (kReadTimeoutInSecondsAttrCmd.c_str(), boost::program_options::value<unsigned int> (&m_iReadTimeoutInSeconds)->default_value(2), "read timeout")
             (kMaxConnectionsAttrCmd.c_str(), boost::program_options::value<unsigned int> (&m_iMaxConnections)->default_value(20), "qantity of simulteniously open connections")
 

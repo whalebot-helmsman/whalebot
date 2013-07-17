@@ -309,6 +309,8 @@ int main(int argc, char* argv[]) {
 
         CLinkExtractor<ILinkFactory> extractor(*factory);
         extractor.extract(f);
+
+        usleep(options.m_iWaitAfterFetchInMicroseconds);
     }
 
     if(options.m_bSaveHistory){
