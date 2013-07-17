@@ -11,5 +11,5 @@ set(EXECUTABLE_OUTPUT_PATH         "${WHALEBOT_BUILD_ROOT}/bin" )
 
 
 add_subdirectory( statsem_string )
-add_subdirectory( 3dparty/google-url )
+add_subdirectory( 3dparty )
 add_subdirectory( webspider )
