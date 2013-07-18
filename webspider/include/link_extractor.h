@@ -17,7 +17,9 @@ class CLinkExtractor {
 public:
 
     CLinkExtractor(T &out);
-    void extract(std::istream &in);
+
+    hubbub_error init();
+    hubbub_error extract(std::istream &in);
     static bool isParse(const std::string &ext);
     static hubbub_error hubbubCallback(const hubbub_token* token, void* pw);
 
@@ -40,14 +42,33 @@ CLinkExtractor<T>::CLinkExtractor(T &out)
 : m_out(out)
 , m_pParser(NULL)
 {
-    hubbub_parser_create(NULL, false, myrealloc, NULL, &m_pParser);
+}
+
+template<class T>
+hubbub_error CLinkExtractor<T>::init()
+{
+    hubbub_error    ret =   HUBBUB_OK;
+
+    ret =   hubbub_parser_create(NULL, false, myrealloc, NULL, &m_pParser);
+
+    if (HUBBUB_OK != ret) {
+        return ret;
+    }
+
+    if (NULL == m_pParser) {
+        return HUBBUB_NOMEM;
+    }
+
     hubbub_parser_optparams token_handler_opt;
     token_handler_opt.token_handler.pw      =   static_cast<void*>(this);
     token_handler_opt.token_handler.handler =   CLinkExtractor<T>::hubbubCallback;
-    hubbub_parser_setopt( m_pParser
-                        , HUBBUB_PARSER_TOKEN_HANDLER
-                        , &token_handler_opt );
+    ret =   hubbub_parser_setopt( m_pParser
+                                , HUBBUB_PARSER_TOKEN_HANDLER
+                                , &token_handler_opt );
+
+    return ret;
 }
+
 
 template<class T>
 CLinkExtractor<T>::~CLinkExtractor()
@@ -62,19 +83,26 @@ bool CLinkExtractor<T>::isParse(const std::string &ext)
 }
 
 template<class T>
-void CLinkExtractor<T>::extract(std::istream &in)
+hubbub_error CLinkExtractor<T>::extract(std::istream &in)
 {
     static const std::streamsize    kMaxReadBufferSize =   1024;
-    char                buffer[kMaxReadBufferSize];
-
+    char            buffer[kMaxReadBufferSize];
     std::streamsize read    =   1;
-    while ((0 != read) && (in)) {
+    hubbub_error    result  =   HUBBUB_OK;
+
+    while ((0 != read) && (in) && (HUBBUB_OK == result)) {
         read    =   in.readsome(buffer, kMaxReadBufferSize);
-        hubbub_parser_parse_chunk( m_pParser
-                                 , reinterpret_cast<const uint8_t*>(buffer)
-                                 , read);
+        result  =   hubbub_parser_parse_chunk( m_pParser
+                                             , reinterpret_cast<const uint8_t*>(buffer)
+                                             , read);
     }
-    hubbub_parser_completed(m_pParser);
+
+    if (HUBBUB_OK != result) {
+        return result;
+    }
+
+    result  =   hubbub_parser_completed(m_pParser);
+    return result;
 }
 
 template<class T>
@@ -85,9 +113,7 @@ hubbub_error CLinkExtractor<T>::hubbubCallback(const hubbub_token* token, void* 
     }
 
     CLinkExtractor<T>* self    =   static_cast<CLinkExtractor<T>*>(pw);
-    self->extract(token->data.tag);
-
-    return HUBBUB_OK;
+    return self->extract(token->data.tag);
 }
 
 hubbub_string   makeHubbubString(const char* str)

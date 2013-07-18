@@ -181,6 +181,7 @@ int main(int argc, char* argv[]) {
 
     while ((work_front.pop(next))&&(!isTimeToStop)) {
 
+        usleep(options.m_iWaitAfterFetchInMicroseconds);
 
         if(!next.isValid())
             continue;
@@ -315,9 +316,21 @@ int main(int argc, char* argv[]) {
         std::ifstream f(filepath.c_str());
 
         CLinkExtractor<ILinkFactory> extractor(*factory);
-        extractor.extract(f);
+        hubbub_error    parserStatus    =   extractor.init();
 
-        usleep(options.m_iWaitAfterFetchInMicroseconds);
+        if (HUBBUB_OK != parserStatus) {
+            (*errorlog) << "Error initializing HTML parser \""
+                        << hubbub_error_to_string(parserStatus) << "\""
+                        << std::endl;
+            continue;
+        }
+
+        parserStatus    =   extractor.extract(f);
+        if (HUBBUB_OK != parserStatus) {
+            (*errorlog) << "Error parsing HTML \""
+                        << hubbub_error_to_string(parserStatus) << "\""
+                        << std::endl;
+        }
     }
 
     if(options.m_bSaveHistory){
