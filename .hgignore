@@ -1,1 +1,3 @@
 ^build/
+hubbub-0.1.1/src/tokeniser/entities.inc$
+libparserutils-0.1.1/src/charset/aliases.inc$
