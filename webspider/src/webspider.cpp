@@ -82,16 +82,23 @@ int main(int argc, char* argv[]) {
 
     while ((true == isOk) && (sigCount != kHandledSignalsSize)) {
         int             sigNum  =   kHandledSignals[sigCount];
-        sighandler_t    oldOne  =   signal(sigNum, signal_catcher);
 
-        if (SIG_ERR == oldOne) {
+        struct sigaction    newAction;
+        memset(&newAction, 0, sizeof(newAction));
+        newAction.sa_handler    =   signal_catcher;
+
+        struct sigaction*   oldOne      =   NULL;
+        int                 sigResult   =   sigaction(sigNum, &newAction, oldOne);
+
+
+        if (0 != sigResult) {
             isOk    =   false;
             (*errorlog) << "cannot set signal handler for " << sigNum << std::endl;
             continue;
         }
 
         //does not brake signal handling of parent process
-        if (SIG_IGN == oldOne) {
+        if ((NULL != oldOne) && (SIG_IGN == oldOne->sa_handler)) {
             signal(sigNum, SIG_IGN);
         }
         ++sigCount;
