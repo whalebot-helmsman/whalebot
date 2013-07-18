@@ -145,6 +145,8 @@ bool CWebSpiderOptions::readFromCmdLine(int argc, char* argv[])
             (kUsedLinksPathAttrCmd.c_str(), boost::program_options::value<std::string> (&m_sUsedLinksPath)->default_value("usedlinks.txt"), "path to used links file")
             (kFutureLinksPathAttrCmd.c_str(), boost::program_options::value<std::string> (&m_sFutureLinksPath)->default_value("futurelinks.txt"), "path future links file")
 
+            (kWaitAfterAttrCmd.c_str(), boost::program_options::value<unsigned int> (&m_iWaitAfterFetchInMicroseconds)->default_value(0), "wait after fetched page")
+
             (kWorkingModeAttrCmd.c_str(), boost::program_options::value<EWorkingMode> (&m_eWorkingMode)->default_value(EInteractiveWorkingMode), "working modes - debug, interactive or daemon")
             (kSaveHistoryAttrCmd.c_str(),  "do not save links after stop")
 
