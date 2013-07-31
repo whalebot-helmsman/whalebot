@@ -12,7 +12,7 @@ CUuidPageStorage::CUuidPageStorage(const std::string &base_dir)
 
     boost::filesystem::create_directories(m_baseDir);
     std::string linkDbPath  =   m_baseDir + "db";
-    m_linkDb.open(linkDbPath.c_str());
+    m_linkDb.open(linkDbPath.c_str(), std::ios::app|std::ios::out);
 }
 
 bool CUuidPageStorage::createPath(std::string server, std::string uri, std::string const &ext, std::string &filename)
