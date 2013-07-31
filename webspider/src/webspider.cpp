@@ -62,7 +62,8 @@ int main(int argc, char* argv[]) {
     std::ostream                        *errorlog(&std::cout);
     boost::scoped_ptr<std::ostream>     logGuard(NULL);
     if (!options.m_sErrorLogPath.empty()) {
-        std::ofstream *file = new std::ofstream(options.m_sErrorLogPath.c_str());
+        std::ofstream *file = new std::ofstream( options.m_sErrorLogPath.c_str()
+                                               , std::ios::out|std::ios::app );
         logGuard.reset(file);
         if (file->is_open()){
             errorlog    =   file;
