@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   OneFetcher.h
  * Author: hotdox
  *
@@ -20,13 +20,13 @@ class CHeaderParser;
 
 class COneFetcher{
 public:
-			COneFetcher();
+			COneFetcher(boost::asio::io_service& service);
     bool    		connect(CLink const &link);
     bool    		request(CLink const &link);
     unsigned int	getHeader(CHeaderParser &header, std::ostream &out);
     bool		getResponse(std::ostream &out);
 private:
-    boost::asio::io_service         m_ioService;
+    boost::asio::io_service&        m_ioService;
     boost::asio::ip::tcp::socket    m_socket;
 };
 

@@ -31,13 +31,21 @@ void async_read(bool &stop){
     stop   =   true;
 }
 
-std::ostream*   gLogger         =   NULL;
-bool*           gStopCondition  =   NULL;
+std::ostream*               gLogger         =   NULL;
+bool*                       gStopCondition  =   NULL;
+boost::asio::io_service*    gIoService      =   NULL;
 
 void signal_catcher(int sgnum)
 {
     *gLogger << "caugth signal " << sgnum << std::endl;
-    *gStopCondition =   true;
+
+    if (NULL != gStopCondition) {
+        *gStopCondition =   true;
+    }
+
+    if (NULL != gIoService) {
+        gIoService->stop();
+    }
 }
 
 
@@ -55,9 +63,11 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
 
-    bool                isTimeToStop(false);
-    gStopCondition  =   &isTimeToStop;
+    boost::asio::io_service             service;
+    bool                                isTimeToStop(false);
 
+    gStopCondition  =   &isTimeToStop;
+    gIoService      =   &service;
 
     std::ostream                        *errorlog(&std::cout);
     boost::scoped_ptr<std::ostream>     logGuard(NULL);
@@ -120,7 +130,7 @@ int main(int argc, char* argv[]) {
         storage =   new CFilenameHandler(options.m_sOutput);
     }
     boost::scoped_ptr<IPageStorage> storageGuard(storage);
-    COneFetcher                     fetcher;
+    COneFetcher                     fetcher(service);
 
     ILinkFactory*       factory(0);
     if (options.m_bCollectLinks) {

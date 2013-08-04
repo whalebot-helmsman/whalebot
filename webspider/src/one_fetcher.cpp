@@ -5,8 +5,8 @@
 #include <version.h>
 
 
-COneFetcher::COneFetcher()
-:m_ioService(),m_socket(m_ioService){}
+COneFetcher::COneFetcher(boost::asio::io_service& service)
+:m_ioService(service),m_socket(m_ioService){}
 bool COneFetcher::connect(CLink const &link){
     //add HTTP_0.9
 
@@ -22,7 +22,7 @@ bool COneFetcher::connect(CLink const &link){
             m_socket.close();
             m_socket.connect(*endpoint_iterator++, error);
         }
-	
+
         if(!error){
             ret =   true;
         }
@@ -85,7 +85,7 @@ unsigned int COneFetcher::getHeader(CHeaderParser &header, std::ostream &out){
         // Write whatever content we already have to output.
         while (response.size() > 0){
             out << &response ;
-         }	  
+         }
 
     }catch(...){
         status_code =   external_error + 1;
