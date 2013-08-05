@@ -75,8 +75,10 @@ int main(int argc, char* argv[]) {
         std::ofstream *file = new std::ofstream( options.m_sErrorLogPath.c_str()
                                                , std::ios::out|std::ios::app );
         logGuard.reset(file);
-        if (file->is_open()){
-            errorlog    =   file;
+        if (!file->is_open()) {
+            (*errorlog) << "Could not open \"" << options.m_sErrorLogPath
+                        << "\" for log file" << std::endl;
+            return EXIT_FAILURE;
         }
     }
 
