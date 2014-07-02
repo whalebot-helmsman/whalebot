@@ -32,7 +32,8 @@ bool CIncludeFilter::filtrate(CLink const &link){
         ret =   false;
         std::list<std::string>::iterator i = m_includeWords.begin();
         while((i != m_includeWords.end())&&(!ret)){
-            ret =   link.getUri().find(*i) != std::string::npos;
+            ret |=  link.getUri().find(*i) != std::string::npos;
+            ret |=  link.getServer().find(*i) != std::string::npos;
             ++i;
         }
     }
