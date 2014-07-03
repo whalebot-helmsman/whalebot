@@ -216,7 +216,9 @@ int main(int argc, char* argv[]) {
         double  time_consumption(boost::posix_time::time_period(start, now).length().total_microseconds());
         time_consumption    /=  1000000;
         (*errorlog) << "speed " <<(link_counter - 1)/time_consumption<<" links/sec"<<std::endl;
-        (*errorlog) << "we have "<<http_errors<<" errors" <<std::endl;
+        if (0 != http_errors) {
+            (*errorlog) << "we have " << http_errors << " errors" << std::endl;
+        }
 
         if(CWebSpiderOptions::EDebugWorkingMode == options.m_eWorkingMode){
             char    c;
