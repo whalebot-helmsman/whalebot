@@ -235,6 +235,7 @@ int main(int argc, char* argv[]) {
 
         if (!connected) {
             (*errorlog) << "\tfailed connect to " << next.getServer() << std::endl;
+            http_errors +=  1;
             continue;
         }
 
