@@ -208,7 +208,7 @@ int main(int argc, char* argv[]) {
         (*errorlog) << now
                     << " we have " << work_front.size() + 1
                     << " links, looks at " << link_counter - 1
-                    << " links, found "<< std::endl;
+                    << " links"<< std::endl;
 
 
 
