@@ -80,6 +80,7 @@ int main(int argc, char* argv[]) {
                         << "\" for log file" << std::endl;
             return EXIT_FAILURE;
         }
+        errorlog    =   file;
     }
 
     gLogger =   errorlog;
