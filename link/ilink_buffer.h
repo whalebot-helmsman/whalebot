@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   ilinkbuffer.h
  * Author: hotdox
  *
@@ -8,8 +8,7 @@
 #ifndef _ILINK_BUFFER_H
 #define	_ILINK_BUFFER_H
 
-#include <link.h>
-#include <iacceptor.h>
+#include "iacceptor.h"
 
 class ILinkBuffer: public IAcceptor{
 public:

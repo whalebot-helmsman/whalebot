@@ -4,12 +4,10 @@
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/algorithm/string.hpp>
 
-#include <parserbase.h>
-
-#include <link_factory.h>
-#include <link.h>
-#include <prefix.h>
-#include <ilink_buffer.h>
+#include "link_factory.h"
+#include "link.h"
+#include "prefix.h"
+#include "ilink_buffer.h"
 
 
 CLinkFactory::CLinkFactory()

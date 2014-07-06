@@ -2,9 +2,9 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include <parserbase.h>
+#include <statsem_string/include/parserbase.h>
 
-#include <whale_link.h>
+#include "whale_link.h"
 
 CLink::CLink()
 : m_tGurl()

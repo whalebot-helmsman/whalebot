@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   LinkFactory.h
  * Author: hotdox
  *
@@ -10,8 +10,8 @@
 
 #include <string>
 
-#include <ilink_factory.h>
-#include <whale_link.h>
+#include "ilink_factory.h"
+#include "whale_link.h"
 
 
 

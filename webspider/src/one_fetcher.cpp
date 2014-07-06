@@ -1,7 +1,7 @@
 
 #include <header_parser.h>
 #include <one_fetcher.h>
-#include <whale_link.h>
+#include <link/whale_link.h>
 #include <version.h>
 
 

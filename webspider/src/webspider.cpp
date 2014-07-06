@@ -14,16 +14,15 @@
 //#include <neon/ne_session.h>
 
 #include <one_fetcher.h>
-#include <link_buffer.h>
-#include <link_extractor.h>
+#include <link/link_buffer.h>
+#include <link/link_extractor.h>
 #include <header_parser.h>
 #include <filename_handler.h>
 #include <uuid_page_storage.hpp>
-#include <filters.h>
-#include <link.h>
-#include <ilink_factory.h>
-#include <link_factory.h>
-#include <collector_link.h>
+#include <link/filters.h>
+#include <link/ilink_factory.h>
+#include <link/link_factory.h>
+#include <link/collector_link.h>
 #include <webspider_options.h>
 
 void async_read(bool &stop){

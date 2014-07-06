@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   ilink_factory.h
  * Author: hotdox
  *
@@ -8,7 +8,7 @@
 #ifndef _ILINK_FACTORY_H
 #define	_ILINK_FACTORY_H
 
-#include <iacceptor.h>
+#include "iacceptor.h"
 
 class CLink;
 

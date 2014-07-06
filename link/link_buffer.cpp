@@ -1,6 +1,6 @@
 #include <iostream>
-#include <filter.h>
-#include <link_buffer.h>
+#include "filter.h"
+#include "link_buffer.h"
 
 
 void CLinkBuffer::writeUsedLinks(std::ostream &uo)const{
@@ -14,7 +14,7 @@ void CLinkBuffer::writeFutureLinks(std::ostream &fo)const{
     for(std::list<CLink>::const_iterator i = m_futureLinks.begin();
         i != m_futureLinks.end(); ++i){
         fo<<*i;
-    }    
+    }
 }
 void CLinkBuffer::readFutureLinks(std::istream &ui){
     CLink    buff;
@@ -41,7 +41,7 @@ bool	CLinkBuffer::pop(CLink &top){
 		top	=	m_futureLinks.front();
                 m_futureLinks.pop_front();
 	}
-	return ret;		
+	return ret;
 }
 size_t CLinkBuffer::size()const{
 	return m_futureLinks.size();

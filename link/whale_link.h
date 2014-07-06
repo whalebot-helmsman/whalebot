@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   link.h
  * Author: hotdox
  *
@@ -33,7 +33,7 @@ public:
 
 private:
 
-    GURL        m_tGurl;    
+    GURL        m_tGurl;
     std::string m_sCookie,
                 m_sCookieForCut;
 };

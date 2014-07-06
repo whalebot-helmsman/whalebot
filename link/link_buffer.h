@@ -6,8 +6,8 @@
 
 #include <boost/unordered_set.hpp>
 
-#include <whale_link.h>
-#include <ilink_buffer.h>
+#include "whale_link.h"
+#include "ilink_buffer.h"
 
 
 class IFilter;
@@ -29,10 +29,10 @@ public:
     void                writeFutureLinks(std::ostream &fo)const;
     void                readUsedLinks(std::istream &ui);
     void                readFutureLinks(std::istream &fi);
-    
+
 
 private:
-    
+
     std::list<CLink>	m_futureLinks;
     boost::unordered_set<CLink, ihash>
                         m_usedLinks;

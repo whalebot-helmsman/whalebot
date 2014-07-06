@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   OneServerFilter.h
  * Author: hotdox
  *
@@ -11,8 +11,8 @@
 #include <list>
 #include <iostream>
 
-#include <filter.h>
-#include <iacceptor.h>
+#include "filter.h"
+#include "iacceptor.h"
 
 
 
