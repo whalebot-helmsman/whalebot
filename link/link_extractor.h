@@ -9,7 +9,6 @@
 #include <string>
 
 #include "prefix.h"
-#include "link.h"
 
 
 template <class T>

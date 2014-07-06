@@ -5,7 +5,6 @@
 #include <boost/algorithm/string.hpp>
 
 #include "link_factory.h"
-#include "link.h"
 #include "prefix.h"
 #include "ilink_buffer.h"
 
