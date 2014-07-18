@@ -285,7 +285,7 @@ int main(int argc, char* argv[]) {
 
         factory->setFrom(next);
 
-        if((!CLinkExtractor<int>::isParse(ext))&&(!options.m_bSavePages))
+        if((!CLinkExtractor::isParse(ext))&&(!options.m_bSavePages))
             continue;
 
         (*errorlog) << "\t*Get response" << std::endl;
@@ -324,14 +324,14 @@ int main(int argc, char* argv[]) {
             filepath    =   options.m_sTmpFilePath;
         }
 
-        if (!CLinkExtractor<int>::isParse(ext)) {
+        if (!CLinkExtractor::isParse(ext)) {
             continue;
         }
 
         (*errorlog) << "\t*Parse " << filepath << std::endl;
         std::ifstream f(filepath.c_str());
 
-        CLinkExtractor<ILinkFactory> extractor(*factory);
+        CLinkExtractor  extractor(*factory);
         hubbub_error    parserStatus    =   extractor.init();
 
         if (HUBBUB_OK != parserStatus) {
