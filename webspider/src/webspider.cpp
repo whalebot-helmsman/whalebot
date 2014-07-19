@@ -65,13 +65,13 @@ int main(int argc, char* argv[])
 
     if (vm.count("version")) {
         std::cout   << "Whalebot - common web crawler, version  " << kVersion << " - Beta" << std::endl;
-        return false;
+        return EXIT_SUCCESS;
     }
 
     if (vm.count("help")) {
         std::cout << "Usage: options_description [options]\n";
         std::cout << desc;
-        return false;
+        return EXIT_SUCCESS;
     }
 
     CSpiderOptions  options;
