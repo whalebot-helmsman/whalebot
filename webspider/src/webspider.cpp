@@ -68,21 +68,19 @@ int main(int argc, char* argv[]) {
     gStopCondition  =   &isTimeToStop;
     gIoService      =   &service;
 
-    std::ostream                        *errorlog(&std::cout);
-    boost::scoped_ptr<std::ostream>     logGuard(NULL);
-    if (!options.m_sErrorLogPath.empty()) {
-        std::ofstream *file = new std::ofstream( options.m_sErrorLogPath.c_str()
-                                               , std::ios::out|std::ios::app );
-        logGuard.reset(file);
-        if (!file->is_open()) {
-            (*errorlog) << "Could not open \"" << options.m_sErrorLogPath
-                        << "\" for log file" << std::endl;
-            return EXIT_FAILURE;
-        }
-        errorlog    =   file;
+    std::string     errorLogPath("/dev/stdout");
+    if (false == options.m_sErrorLogPath.empty()) {
+        errorLogPath    =   options.m_sErrorLogPath;
     }
 
-    gLogger =   errorlog;
+    std::ofstream   errorLogFile(errorLogPath.c_str(), std::ios::out|std::ios::app);
+    if (false == errorLogFile.is_open()) {
+        std::cout << "Could not open \"" << errorLogPath
+                  << "\" for log file" << std::endl;
+        return EXIT_FAILURE;
+    }
+
+    gLogger =   &errorLogFile;
 
     static const int            kHandledSignals[]   =   { SIGINT
                                                         , SIGQUIT
@@ -106,7 +104,7 @@ int main(int argc, char* argv[]) {
 
         if (0 != sigResult) {
             isOk    =   false;
-            (*errorlog) << "cannot set signal handler for " << sigNum << std::endl;
+            errorLogFile << "cannot set signal handler for " << sigNum << std::endl;
             continue;
         }
 
@@ -122,7 +120,8 @@ int main(int argc, char* argv[]) {
     }
 
 
-    errorlog->imbue(std::locale(errorlog->getloc(), new boost::posix_time::time_facet("%T")));
+    errorLogFile.imbue(std::locale( errorLogFile.getloc()
+                                  , new boost::posix_time::time_facet("%T") ));
 
     IPageStorage*                   storage =   NULL;
     if (true == options.m_bIsUseUuidStorage) {
@@ -204,19 +203,19 @@ int main(int argc, char* argv[]) {
         boost::posix_time::ptime   now   =   boost::posix_time::microsec_clock::local_time();
 
 
-        (*errorlog) << now
-                    << " we have " << work_front.size() + 1
-                    << " links, looks at " << link_counter - 1
-                    << " links"<< std::endl;
+        errorLogFile << now
+                     << " we have " << work_front.size() + 1
+                     << " links, looks at " << link_counter - 1
+                     << " links"<< std::endl;
 
 
 
 
         double  time_consumption(boost::posix_time::time_period(start, now).length().total_microseconds());
         time_consumption    /=  1000000;
-        (*errorlog) << "speed " <<(link_counter - 1)/time_consumption<<" links/sec"<<std::endl;
+        errorLogFile << "speed " <<(link_counter - 1)/time_consumption<<" links/sec"<<std::endl;
         if (0 != http_errors) {
-            (*errorlog) << "we have " << http_errors << " errors" << std::endl;
+            errorLogFile << "we have " << http_errors << " errors" << std::endl;
         }
 
         if(CWebSpiderOptions::EDebugWorkingMode == options.m_eWorkingMode){
@@ -232,43 +231,43 @@ int main(int argc, char* argv[]) {
 
 
 
-        (*errorlog) << "*Connect to " << next.getServer() << std::endl;
+        errorLogFile << "*Connect to " << next.getServer() << std::endl;
         connected = fetcher.connect(next);
 
         if (!connected) {
-            (*errorlog) << "\tfailed connect to " << next.getServer() << std::endl;
+            errorLogFile << "\tfailed connect to " << next.getServer() << std::endl;
             http_errors +=  1;
             continue;
         }
 
         factory->setFrom(next);
 
-        (*errorlog) << "\t*Request " << next.getUri() << std::endl;
+        errorLogFile << "\t*Request " << next.getUri() << std::endl;
         if (!fetcher.request(next)) {
-            (*errorlog) << "\t\tfailed" << std::endl;
+            errorLogFile << "\t\tfailed" << std::endl;
             continue;
         }
 
         std::ofstream tmp(options.m_sTmpFilePath.c_str());
 
         CHeaderParser header;
-        (*errorlog) << "\t\tget header " << std::endl;
+        errorLogFile << "\t\tget header " << std::endl;
         unsigned int status(fetcher.getHeader(header, tmp));
         if ((status != 200) && (status != 301) && (status != 302) && (status != 303)) {
-            (*errorlog) << "\t\t\tfailed error = " << status << std::endl;
-            (*errorlog) << "\t\t\tfrom server " << next.getServer() << std::endl;
-            (*errorlog) << "\t\t\t**************************************" << std::endl;
+            errorLogFile << "\t\t\tfailed error = " << status << std::endl;
+            errorLogFile << "\t\t\tfrom server " << next.getServer() << std::endl;
+            errorLogFile << "\t\t\t**************************************" << std::endl;
             for (header_map::const_iterator i = header.begin(); i != header.end(); ++i) {
-                (*errorlog) <<"\t\t\t"<< i->first << " = " << i->second << std::endl;
+                errorLogFile <<"\t\t\t"<< i->first << " = " << i->second << std::endl;
             }
-            (*errorlog) << "\t\t\t**************************************" << std::endl;
+            errorLogFile << "\t\t\t**************************************" << std::endl;
             ++http_errors;
             continue;
         }
         if ((status == 301) || (status == 302) || (status == 303)) {
             std::string loc;
             if (header.getField("Location", loc)) {
-                (*errorlog) << "\t\t\tredirected to " << loc << std::endl;
+                errorLogFile << "\t\t\tredirected to " << loc << std::endl;
                factory->pushLink(loc);
             }
             continue;
@@ -288,12 +287,12 @@ int main(int argc, char* argv[]) {
         if((!CLinkExtractor::isParse(ext))&&(!options.m_bSavePages))
             continue;
 
-        (*errorlog) << "\t*Get response" << std::endl;
+        errorLogFile << "\t*Get response" << std::endl;
 
         bool res(fetcher.getResponse(tmp));
 
         if (!res) {
-            (*errorlog) << "\t\tfailed" << std::endl;
+            errorLogFile << "\t\tfailed" << std::endl;
             continue;
         }
         tmp.close();
@@ -304,11 +303,11 @@ int main(int argc, char* argv[]) {
 
         if(options.m_bSavePages){
             if (!storage->createPath(next.getServer(), next.getUri(), ext, filepath)) {
-                (*errorlog) << "\t\tcouldnt create dir for " << filepath << std::endl;
+                errorLogFile << "\t\tcouldnt create dir for " << filepath << std::endl;
                 continue;
             }
 
-            (*errorlog) << "\t\twrite to " << filepath << std::endl;
+            errorLogFile << "\t\twrite to " << filepath << std::endl;
             try {
 
                 if (boost::filesystem::exists(filepath)) {
@@ -317,7 +316,7 @@ int main(int argc, char* argv[]) {
 
                 boost::filesystem::copy_file(options.m_sTmpFilePath, filepath);
             } catch (...) {
-                (*errorlog) << "\t\t\tcoudnt copy " << options.m_sTmpFilePath << " to " << filepath << std::endl;
+                errorLogFile << "\t\t\tcoudnt copy " << options.m_sTmpFilePath << " to " << filepath << std::endl;
                 continue;
             }
         }else{
@@ -328,24 +327,24 @@ int main(int argc, char* argv[]) {
             continue;
         }
 
-        (*errorlog) << "\t*Parse " << filepath << std::endl;
+        errorLogFile << "\t*Parse " << filepath << std::endl;
         std::ifstream f(filepath.c_str());
 
         CLinkExtractor  extractor(*factory);
         hubbub_error    parserStatus    =   extractor.init();
 
         if (HUBBUB_OK != parserStatus) {
-            (*errorlog) << "Error initializing HTML parser \""
-                        << hubbub_error_to_string(parserStatus) << "\""
-                        << std::endl;
+            errorLogFile << "Error initializing HTML parser \""
+                         << hubbub_error_to_string(parserStatus) << "\""
+                         << std::endl;
             continue;
         }
 
         parserStatus    =   extractor.extract(f);
         if (HUBBUB_OK != parserStatus) {
-            (*errorlog) << "Error parsing HTML \""
-                        << hubbub_error_to_string(parserStatus) << "\""
-                        << std::endl;
+            errorLogFile << "Error parsing HTML \""
+                         << hubbub_error_to_string(parserStatus) << "\""
+                         << std::endl;
         }
     }
 
@@ -353,7 +352,7 @@ int main(int argc, char* argv[]) {
 
         if (not work_front.IsFutureEmpty()) {
             std::ofstream   futurelinks_endfile(options.m_sFutureLinksPath.c_str());
-            (*errorlog) << "saving future links to " << options.m_sFutureLinksPath << std::endl;
+            errorLogFile << "saving future links to " << options.m_sFutureLinksPath << std::endl;
             work_front.writeFutureLinks(futurelinks_endfile);
             futurelinks_endfile.close();
         }
@@ -361,14 +360,14 @@ int main(int argc, char* argv[]) {
 
         if (not work_front.IsUsedEmpty()) {
             std::ofstream   usedlinks_endfile(options.m_sUsedLinksPath.c_str());
-            (*errorlog) << "saving used links to " << options.m_sUsedLinksPath << std::endl;
+            errorLogFile << "saving used links to " << options.m_sUsedLinksPath << std::endl;
             work_front.writeUsedLinks(usedlinks_endfile);
             usedlinks_endfile.close();
         }
 
     }
 
-    (*errorlog) << "*Stop working release resourses" << std::endl;
+    errorLogFile << "*Stop working release resourses" << std::endl;
     if (boost::filesystem::exists(options.m_sTmpFilePath)) {
         boost::filesystem::remove(options.m_sTmpFilePath);
     }
