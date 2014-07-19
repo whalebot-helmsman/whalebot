@@ -7,4 +7,4 @@
 
 #pragma once
 
-const std::string   kVersion           =   "0.03.00";
+const std::string   kVersion           =   "0.03.10";
