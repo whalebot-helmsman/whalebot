@@ -332,7 +332,7 @@ int main(int argc, char* argv[])
         errorLogFile << "\t*Parse " << filepath << std::endl;
         std::ifstream f(filepath.c_str());
 
-        CLinkExtractor  extractor(normolizer);
+        CLinkExtractor  extractor(normolizer, options.HtmlExtractor);
         hubbub_error    parserStatus    =   extractor.init();
 
         if (HUBBUB_OK != parserStatus) {

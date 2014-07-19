@@ -1,8 +1,11 @@
 #ifndef _LINK_EXTRACTOR_H_
 #define _LINK_EXTRACTOR_H_
 
-#include <iostream>
+#include <options/options.hpp>
+
 #include <hubbub/hubbub.h>
+
+#include <iostream>
 
 class CUrlNormalizer;
 struct hubbub_parser;
@@ -10,7 +13,7 @@ struct hubbub_parser;
 class CLinkExtractor {
 public:
 
-    CLinkExtractor(CUrlNormalizer& out);
+    CLinkExtractor(CUrlNormalizer& out, const CHtmlExtractorOptions& options);
 
     hubbub_error init();
     hubbub_error extract(std::istream &in);
@@ -22,8 +25,9 @@ public:
     ~CLinkExtractor();
 
 private:
-    CUrlNormalizer& m_out;
-    hubbub_parser*  m_pParser;
+    CUrlNormalizer&                         m_out;
+    hubbub_parser*                          m_pParser;
+    CHtmlExtractorOptions::CTagExtractors   Extractors;
 };
 
 #endif //_LINK_EXTRACTOR_H_

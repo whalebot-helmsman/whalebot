@@ -23,5 +23,16 @@
 
     "fetch" : {
         "wait" : 1000000
+    },
+
+    "html_extractor" : {
+        "is_use_default_extractor" : true,
+        "extractors"               : [
+            {
+                "tag"               : "img",
+                "target_attribute"  : "src"
+            }
+
+        ]
     }
 }

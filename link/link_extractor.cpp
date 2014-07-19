@@ -16,10 +16,23 @@ static void *myrealloc( void *ptr, size_t len, void* /*pw*/ )
     return realloc(ptr, len);
 }
 
-CLinkExtractor::CLinkExtractor(CUrlNormalizer& out)
+CLinkExtractor::CLinkExtractor(CUrlNormalizer& out, const CHtmlExtractorOptions& options)
 : m_out(out)
 , m_pParser(NULL)
 {
+    if (true == options.IsUseDefaultExtractor) {
+        CTagExtractorOptions    anchorExtractor;
+        anchorExtractor.Tag                     =   "a";
+        anchorExtractor.TargetAttribute         =   "href";
+        anchorExtractor.ControlAttribute        =   "";
+        anchorExtractor.ControlAttributeValue   =   "";
+
+        Extractors.push_back(anchorExtractor);
+    }
+
+    Extractors.insert( Extractors.end()
+                     , options.CustomTagExtractors.begin()
+                     , options.CustomTagExtractors.end() );
 }
 
 hubbub_error CLinkExtractor::init()
@@ -89,83 +102,82 @@ hubbub_error CLinkExtractor::hubbubCallback(const hubbub_token* token, void* pw)
     return self->extract(token->data.tag);
 }
 
-hubbub_string   makeHubbubString(const char* str)
+bool isStringEqual(const std::string& l, const hubbub_string& r)
 {
-    hubbub_string   ret;
-    ret.ptr =   reinterpret_cast<const uint8_t*>(str);
-    ret.len =   strlen(str);
-    return ret;
+    return (  (l.size() == r.len)
+           && (0 == strncasecmp( l.c_str()
+                               , reinterpret_cast<const char*>(r.ptr)
+                               , r.len ) ) );
 }
 
-struct TExtractTask {
+struct CAttributeMatcher {
 public:
-    hubbub_string   TagName;
-    hubbub_string   AttrName;
-};
-
-bool hubbubStrNCaseCmp(const hubbub_string& l, const hubbub_string& r)
-{
-    if (l.len != r.len) {
-        return false;
-    }
-
-    return 0 == strncasecmp( reinterpret_cast<const char*>(l.ptr)
-                           , reinterpret_cast<const char*>(r.ptr)
-                           , r.len );
-}
-
-struct TExtractTaskMatcher {
-public:
-    TExtractTaskMatcher(const hubbub_string& tagName)
-    : TagName(tagName)
-    {}
-
-    bool operator() (const TExtractTask& task)
-    {
-        return hubbubStrNCaseCmp(task.TagName, TagName);
-    }
-
-private:
-    const hubbub_string&    TagName;
-};
-
-struct TAttributeMatcher {
-public:
-    TAttributeMatcher(const hubbub_string& attrName)
+    CAttributeMatcher(const std::string& attrName)
     : AttrName(attrName)
     {}
 
     bool operator() (const hubbub_attribute& attr)
     {
-        return hubbubStrNCaseCmp(AttrName, attr.name);
+        return isStringEqual(AttrName, attr.name);
     }
-
 private:
-    const hubbub_string&    AttrName;
+    const std::string&  AttrName;
 };
 
-hubbub_error CLinkExtractor::extract(const hubbub_tag& tag)
+static bool isTagMatched(const hubbub_tag& tag, const CTagExtractorOptions& extractor)
 {
-    static const TExtractTask   kTasks[]    =   {{makeHubbubString("a"), makeHubbubString("href")}};
-    static const unsigned int   kTasksSize  =   sizeof(kTasks) / sizeof(kTasks[0]);
-    static const TExtractTask*  kTasksBegin =   kTasks;
-    static const TExtractTask*  kTasksEnd   =   kTasksBegin + kTasksSize;
+    if (false == isStringEqual(extractor.Tag, tag.name)) {
+        return false;
+    }
 
-    const TExtractTask* task    =   std::find_if(kTasksBegin, kTasksEnd, TExtractTaskMatcher(tag.name));
-    if (kTasksEnd == task) {
-        return HUBBUB_OK;
+    if (true == extractor.ControlAttribute.empty()) {
+        return true;
     }
 
     hubbub_attribute*   attrBegin   =   tag.attributes;
     hubbub_attribute*   attrEnd     =   attrBegin + tag.n_attributes;
-    hubbub_attribute*   attribute   =   std::find_if(attrBegin, attrEnd, TAttributeMatcher(task->AttrName));
+    hubbub_attribute*   attrPos     =   std::find_if( attrBegin
+                                                    , attrEnd
+                                                    , CAttributeMatcher(extractor.ControlAttribute) );
 
-    if (attrEnd == attribute) {
-        return HUBBUB_OK;
+    if (attrEnd == attrPos) {
+        return false;
     }
-    std::string link(reinterpret_cast<const char*>(attribute->value.ptr), attribute->value.len);
-    m_out.pushLink(link);
 
+    if (true == extractor.ControlAttributeValue.empty()) {
+        return true;
+    }
+
+    return isStringEqual(extractor.ControlAttributeValue, attrPos->value);
+}
+
+hubbub_error CLinkExtractor::extract(const hubbub_tag& tag)
+{
+    std::string result;
+
+    for (unsigned int extractorNum = 0; extractorNum != Extractors.size(); ++extractorNum) {
+
+        const CTagExtractorOptions& extractor(Extractors[extractorNum]);
+        bool                        isMatched   =   isTagMatched(tag, extractor);
+
+        if (false == isMatched) {
+            continue;
+        }
+
+        hubbub_attribute*   attrBegin   =   tag.attributes;
+        hubbub_attribute*   attrEnd     =   attrBegin + tag.n_attributes;
+        hubbub_attribute*   attrPos     =   std::find_if( attrBegin
+                                                        , attrEnd
+                                                        , CAttributeMatcher(extractor.TargetAttribute) );
+
+        if (attrEnd == attrPos) {
+            continue;
+        }
+
+        hubbub_string   resultStr   =   attrPos->value;
+        result.assign(reinterpret_cast<const char*>(resultStr.ptr), resultStr.len);
+        m_out.pushLink(result);
+    }
     return HUBBUB_OK;
 }
 
