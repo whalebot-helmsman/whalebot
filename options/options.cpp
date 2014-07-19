@@ -150,6 +150,21 @@ void CRuntimeOptions::Load( const boost::property_tree::ptree& properties
     rebasePath(basePath, LogPath);
 }
 
+void CHtmlExtractorOptions::Load(const boost::property_tree::ptree& properties)
+{
+    IsUseDefaultExtractor   =   properties.get("is_use_default_extractor", true);
+
+    BOOST_FOREACH(const boost::property_tree::ptree::value_type& extractor, properties.get_child("extractors", kEmptyTree)) {
+        CTagExtractorOptions    tagExtractor;
+        tagExtractor.Tag                    =   extractor.second.get("tag",               "");
+        tagExtractor.TargetAttribute        =   extractor.second.get("target_attribute",  "");
+        tagExtractor.ControlAttribute       =   extractor.second.get("control_attribute", "");
+        tagExtractor.ControlAttributeValue  =   extractor.second.get("control_value",     "");
+
+        CustomTagExtractors.push_back(tagExtractor);
+    }
+}
+
 void CSpiderOptions::Load(const std::string& configPath)
 {
     boost::property_tree::ptree properties;
@@ -158,6 +173,7 @@ void CSpiderOptions::Load(const std::string& configPath)
     Storage.Load(properties.get_child("storage", kEmptyTree), boost::filesystem::path(configPath).parent_path().native());
     Runtime.Load(properties.get_child("runtime", kEmptyTree), Storage.BaseDirectory);
     Fetch.Load(properties.get_child("fetch", kEmptyTree));
+    HtmlExtractor.Load(properties.get_child("html_extractor", kEmptyTree));
     LinkFilter.Load(properties.get_child("link_filters", kEmptyTree));
 }
 

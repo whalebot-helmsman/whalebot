@@ -70,13 +70,31 @@ public:
     void Load(const boost::property_tree::ptree& properties);
 };
 
+struct CTagExtractorOptions {
+public:
+    std::string Tag;
+    std::string TargetAttribute;
+    std::string ControlAttribute;
+    std::string ControlAttributeValue;
+};
+
+struct CHtmlExtractorOptions {
+public:
+    bool    IsUseDefaultExtractor;
+
+    typedef std::vector<CTagExtractorOptions>   CTagExtractors;
+    CTagExtractors  CustomTagExtractors;
+
+    void Load(const boost::property_tree::ptree& properties);
+};
 
 struct CSpiderOptions {
 public:
-    CStorageOptions     Storage;
-    CRuntimeOptions     Runtime;
-    CFetchOptions       Fetch;
-    CLinkFilterOptions  LinkFilter;
+    CStorageOptions         Storage;
+    CRuntimeOptions         Runtime;
+    CFetchOptions           Fetch;
+    CLinkFilterOptions      LinkFilter;
+    CHtmlExtractorOptions   HtmlExtractor;
 
     void Load(const std::string& configPath);
 };
