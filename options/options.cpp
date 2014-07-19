@@ -141,10 +141,13 @@ void CFetchOptions::Load(const boost::property_tree::ptree& properties)
     WaitAfterFetchInMicroseconds    =   properties.get("wait", 0);
 }
 
-void CRuntimeOptions::Load(const boost::property_tree::ptree& properties)
+void CRuntimeOptions::Load( const boost::property_tree::ptree& properties
+                          , const std::string&                 basePath )
 {
     std::string mode    =   properties.get<std::string>("mode", kWorkingModeMapper[1].Repr);
     Mode    =   WorkingModeFromString(mode.c_str());
+    LogPath =   properties.get("log_file", "/dev/stdout");
+    rebasePath(basePath, LogPath);
 }
 
 void CSpiderOptions::Load(const std::string& configPath)
@@ -153,7 +156,7 @@ void CSpiderOptions::Load(const std::string& configPath)
     read_json(configPath, properties);
 
     Storage.Load(properties.get_child("storage", kEmptyTree), boost::filesystem::path(configPath).parent_path().native());
-    Runtime.Load(properties.get_child("runtime", kEmptyTree));
+    Runtime.Load(properties.get_child("runtime", kEmptyTree), Storage.BaseDirectory);
     Fetch.Load(properties.get_child("fetch", kEmptyTree));
     LinkFilter.Load(properties.get_child("link_filters", kEmptyTree));
 }

@@ -44,8 +44,10 @@ public:
     static const char* WorkingModeToString(EWorkingMode mode);
     static EWorkingMode WorkingModeFromString(const char* mode);
     EWorkingMode    Mode;
+    std::string     LogPath;
 
-    void Load(const boost::property_tree::ptree& properties);
+    void Load( const boost::property_tree::ptree& properties
+             , const std::string&                 basePath );
 };
 
 struct CFetchOptions {
