@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   version.h
  * Author: hotdox
  *
@@ -7,4 +7,4 @@
 
 #pragma once
 
-const std::string   kVersion           =   "0.02.20";
+const std::string   kVersion           =   "0.03.20";
