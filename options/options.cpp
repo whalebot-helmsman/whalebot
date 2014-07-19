@@ -92,6 +92,15 @@ void rebasePath(const std::string& basePath, std::string& partial)
 
 static const boost::property_tree::ptree    kEmptyTree;
 
+struct TStorageTypeToStringMapperCell {
+public:
+    CStorageOptions::EPageStorageType   Value;
+    const char*                         Repr;
+};
+
+
+static const TStorageTypeToStringMapperCell     kStorageTypeMapper[]    =   { {CStorageOptions::EPageStorageTypePlain, "plain"}
+                                                                            , {CStorageOptions::EPageStorageTypeUuid,  "uuid" } };
 
 void CStorageOptions::Load( const boost::property_tree::ptree& properties
                           , const std::string&                 defaultBasePath )
@@ -112,6 +121,9 @@ void CStorageOptions::Load( const boost::property_tree::ptree& properties
 
     IsSaveFutureAndUsedLinks    =   properties.get("is_save_links", true);
     IsSavePages                 =   properties.get("is_save_pages", true);
+
+    std::string type    =   properties.get<std::string>("page_storage_type", kStorageTypeMapper[0].Repr);
+    PageStorageType     =   StorageTypeFromString(type.c_str());
 }
 
 void CLinkFilterOptions::Load(const boost::property_tree::ptree& properties)
@@ -144,4 +156,66 @@ void CSpiderOptions::Load(const std::string& configPath)
     Runtime.Load(properties.get_child("runtime", kEmptyTree));
     Fetch.Load(properties.get_child("fetch", kEmptyTree));
     LinkFilter.Load(properties.get_child("link_filters", kEmptyTree));
+}
+
+static const unsigned int                       kStorageTypeMapperSize  =   sizeof(kStorageTypeMapper) / sizeof(kStorageTypeMapper[0]);
+static const TStorageTypeToStringMapperCell*    kStorageTypeMapperBegin =   kStorageTypeMapper;
+static const TStorageTypeToStringMapperCell*    kStorageTypeMapperEnd   =   kStorageTypeMapper + kStorageTypeMapperSize;
+
+struct TByTypeFinder {
+public:
+    TByTypeFinder(CStorageOptions::EPageStorageType type)
+    : Type(type)
+    {}
+
+    bool operator () (TStorageTypeToStringMapperCell cell)
+    {
+        return cell.Value == Type;
+    }
+
+private:
+    CStorageOptions::EPageStorageType   Type;
+};
+
+const char* CStorageOptions::StorageTypeToString(EPageStorageType type)
+{
+
+    const TStorageTypeToStringMapperCell* pos =   std::find_if( kStorageTypeMapperBegin
+                                                              , kStorageTypeMapperEnd
+                                                              , TByTypeFinder(type) );
+
+    if (kStorageTypeMapperEnd == pos) {
+        return "unknown";
+    }
+
+    return pos->Repr;
+}
+
+struct TByTypeReprFinder {
+public:
+    TByTypeReprFinder(const char* type)
+    : Type(type)
+    {}
+
+    bool operator () (TStorageTypeToStringMapperCell cell)
+    {
+        return 0 == strcmp(cell.Repr, Type);
+    }
+
+private:
+    const char* Type;
+};
+
+CStorageOptions::EPageStorageType CStorageOptions::StorageTypeFromString(const char* type)
+{
+
+    const TStorageTypeToStringMapperCell* pos =   std::find_if( kStorageTypeMapperBegin
+                                                              , kStorageTypeMapperEnd
+                                                              , TByTypeReprFinder(type) );
+
+    if (kStorageTypeMapperEnd == pos) {
+        return EPageStorageTypeUnknown;
+    }
+
+    return pos->Value;
 }

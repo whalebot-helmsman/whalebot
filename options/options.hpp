@@ -15,7 +15,8 @@ public:
     std::string PageStorageDirectory;
     enum EPageStorageType {
         EPageStorageTypePlain = 0,
-        EPageStorageTypeUuid
+        EPageStorageTypeUuid,
+        EPageStorageTypeUnknown
     };
     EPageStorageType    PageStorageType;
     bool                IsSavePages;
@@ -26,6 +27,9 @@ public:
 
     void Load( const boost::property_tree::ptree& properties
              , const std::string&                 defaultBasePath );
+
+    static const char* StorageTypeToString(EPageStorageType type);
+    static EPageStorageType StorageTypeFromString(const char* type);
 };
 
 struct CRuntimeOptions {
