@@ -30,6 +30,75 @@ CLinkExtractor::CLinkExtractor(CUrlNormalizer& out, const CHtmlExtractorOptions&
         Extractors.push_back(anchorExtractor);
     }
 
+    if (true == options.IsExtractImages) {
+        CTagExtractorOptions    imagesExtractor;
+        imagesExtractor.Tag                     =   "img";
+        imagesExtractor.TargetAttribute         =   "src";
+        imagesExtractor.ControlAttribute        =   "";
+        imagesExtractor.ControlAttributeValue   =   "";
+
+        Extractors.push_back(imagesExtractor);
+    }
+
+    if (true == options.IsExtractCss) {
+        CTagExtractorOptions    cssExtractor;
+        cssExtractor.Tag                    =   "link";
+        cssExtractor.TargetAttribute        =   "href";
+        cssExtractor.ControlAttribute       =   "rel";
+        cssExtractor.ControlAttributeValue  =   "stylesheet";
+
+        Extractors.push_back(cssExtractor);
+    }
+
+    if (true == options.IsExtractStructure) {
+        static const char*     kStructureRelations[]    =   { "search"
+                                                            , "up"
+                                                            , "index"
+                                                            , "first"
+                                                            , "prev"
+                                                            , "next"
+                                                            , "last"
+                                                            , "alternate"
+                                                            , "help" };
+        static const char**    kStructureRelationsBegin =   kStructureRelations;
+        static const int       kStructureRelationsSize  =   sizeof(kStructureRelations) / sizeof(kStructureRelations[0]);
+        static const char**    kStructureRelationsEnd   =   kStructureRelationsBegin + kStructureRelationsSize;
+
+        for (const char** structureRelation = kStructureRelationsBegin; structureRelation != kStructureRelationsEnd; ++structureRelation) {
+            CTagExtractorOptions    structureExtractor;
+            structureExtractor.Tag                      =   "link";
+            structureExtractor.TargetAttribute          =   "href";
+            structureExtractor.ControlAttribute         =   "rel";
+            structureExtractor.ControlAttributeValue    =   *structureRelation;
+
+            Extractors.push_back(structureExtractor);
+        }
+
+    }
+
+    if (true == options.IsExtractFavicons) {
+        static const char*     kIconRelations[]    =   { "icon"
+                                                       , "apple-touch-icon"
+                                                       , "apple-touch-startup-image"
+                                                       , "apple-touch-icon-precomposed"
+                                                       , "shortcut icon"
+                                                       , "msapplication-TileImage" };
+        static const char**    kIconRelationsBegin =   kIconRelations;
+        static const int       kIconRelationsSize  =   sizeof(kIconRelations) / sizeof(kIconRelations[0]);
+        static const char**    kIconRelationsEnd   =   kIconRelationsBegin + kIconRelationsSize;
+
+        for (const char** iconRelation = kIconRelationsBegin; iconRelation != kIconRelationsEnd; ++iconRelation) {
+            CTagExtractorOptions    favicoExtractor;
+            favicoExtractor.Tag                     =   "link";
+            favicoExtractor.TargetAttribute         =   "href";
+            favicoExtractor.ControlAttribute        =   "rel";
+            favicoExtractor.ControlAttributeValue   =   *iconRelation;
+
+            Extractors.push_back(favicoExtractor);
+        }
+
+    }
+
     Extractors.insert( Extractors.end()
                      , options.CustomTagExtractors.begin()
                      , options.CustomTagExtractors.end() );

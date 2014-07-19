@@ -8,7 +8,7 @@
         "extracted_links_file" : "extracted_links",
         "is_save_links"        : true,
         "is_save_pages"        : true,
-        "page_storage_type"    : "uuid"
+        "page_storage_type"    : "plain"
     },
 
     "runtime" : {
@@ -27,12 +27,9 @@
 
     "html_extractor" : {
         "is_use_default_extractor" : true,
-        "extractors"               : [
-            {
-                "tag"               : "img",
-                "target_attribute"  : "src"
-            }
-
-        ]
+        "is_extract_images"        : false,
+        "is_extract_css"           : false,
+        "is_extract_favicons"      : false,
+        "is_extract_structure"     : true
     }
 }

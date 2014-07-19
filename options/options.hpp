@@ -81,6 +81,10 @@ public:
 struct CHtmlExtractorOptions {
 public:
     bool    IsUseDefaultExtractor;
+    bool    IsExtractImages;
+    bool    IsExtractCss;
+    bool    IsExtractFavicons;
+    bool    IsExtractStructure;
 
     typedef std::vector<CTagExtractorOptions>   CTagExtractors;
     CTagExtractors  CustomTagExtractors;

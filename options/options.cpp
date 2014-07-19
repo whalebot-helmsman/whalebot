@@ -153,6 +153,10 @@ void CRuntimeOptions::Load( const boost::property_tree::ptree& properties
 void CHtmlExtractorOptions::Load(const boost::property_tree::ptree& properties)
 {
     IsUseDefaultExtractor   =   properties.get("is_use_default_extractor", true);
+    IsExtractImages         =   properties.get("is_extract_images",        false);
+    IsExtractCss            =   properties.get("is_extract_css",           false);
+    IsExtractFavicons       =   properties.get("is_extract_favicons",      false);
+    IsExtractStructure      =   properties.get("is_extract_structure",     false);
 
     BOOST_FOREACH(const boost::property_tree::ptree::value_type& extractor, properties.get_child("extractors", kEmptyTree)) {
         CTagExtractorOptions    tagExtractor;
