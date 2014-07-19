@@ -20,9 +20,7 @@
 #include <filename_handler.h>
 #include <uuid_page_storage.hpp>
 #include <link/filters.h>
-#include <link/ilink_factory.h>
-#include <link/link_factory.h>
-#include <link/collector_link.h>
+#include <link/url_normalizer.hpp>
 #include <webspider_options.h>
 
 void async_read(bool &stop){
@@ -133,18 +131,18 @@ int main(int argc, char* argv[]) {
     boost::scoped_ptr<IPageStorage> storageGuard(storage);
     COneFetcher                     fetcher(service);
 
-    ILinkFactory*       factory(0);
+    std::string     linkStoragePath("/dev/null");
     if (options.m_bCollectLinks) {
-        factory =   new CCollectorLinkFactory();
+        boost::filesystem::path storagePath(options.m_sOutput);
+        storagePath +=  "rl_links.txt";
+        linkStoragePath =   storagePath.native();
     }
-    else {
-        factory =   new CLinkFactory();
-    }
-    boost::scoped_ptr<ILinkFactory> factoryGuard(factory);
+
+    CUrlNormalizer  normolizer(linkStoragePath);
 
     CFilterList     filters;
     CLinkBuffer     work_front;
-    factory->setAcceptor(filters);
+    normolizer.setAcceptor(filters);
     filters.setAcceptor(work_front);
 
     if(options.m_bOneServer){
@@ -176,7 +174,7 @@ int main(int argc, char* argv[]) {
         usedlinks_file.clear();
     }
 
-    factory->pushLink(options.m_sSite);
+    normolizer.pushLink(options.m_sSite);
 
     CLink   next;
     bool    connected(false);
@@ -240,7 +238,7 @@ int main(int argc, char* argv[]) {
             continue;
         }
 
-        factory->setFrom(next);
+        normolizer.setFrom(next);
 
         errorLogFile << "\t*Request " << next.getUri() << std::endl;
         if (!fetcher.request(next)) {
@@ -268,7 +266,7 @@ int main(int argc, char* argv[]) {
             std::string loc;
             if (header.getField("Location", loc)) {
                 errorLogFile << "\t\t\tredirected to " << loc << std::endl;
-               factory->pushLink(loc);
+               normolizer.pushLink(loc);
             }
             continue;
         }
@@ -282,7 +280,7 @@ int main(int argc, char* argv[]) {
         header.getExtension(ext);
         next.setCookie(cookies);
 
-        factory->setFrom(next);
+        normolizer.setFrom(next);
 
         if((!CLinkExtractor::isParse(ext))&&(!options.m_bSavePages))
             continue;
@@ -330,7 +328,7 @@ int main(int argc, char* argv[]) {
         errorLogFile << "\t*Parse " << filepath << std::endl;
         std::ifstream f(filepath.c_str());
 
-        CLinkExtractor  extractor(*factory);
+        CLinkExtractor  extractor(normolizer);
         hubbub_error    parserStatus    =   extractor.init();
 
         if (HUBBUB_OK != parserStatus) {

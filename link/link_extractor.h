@@ -4,13 +4,13 @@
 #include <iostream>
 #include <hubbub/hubbub.h>
 
-class ILinkFactory;
+class CUrlNormalizer;
 struct hubbub_parser;
 
 class CLinkExtractor {
 public:
 
-    CLinkExtractor(ILinkFactory& out);
+    CLinkExtractor(CUrlNormalizer& out);
 
     hubbub_error init();
     hubbub_error extract(std::istream &in);
@@ -22,7 +22,7 @@ public:
     ~CLinkExtractor();
 
 private:
-    ILinkFactory&   m_out;
+    CUrlNormalizer& m_out;
     hubbub_parser*  m_pParser;
 };
 

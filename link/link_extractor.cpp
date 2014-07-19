@@ -1,5 +1,5 @@
 #include "link_extractor.h"
-#include "ilink_factory.h"
+#include "url_normalizer.hpp"
 
 #include "prefix.h"
 
@@ -16,7 +16,7 @@ static void *myrealloc( void *ptr, size_t len, void* /*pw*/ )
     return realloc(ptr, len);
 }
 
-CLinkExtractor::CLinkExtractor(ILinkFactory& out)
+CLinkExtractor::CLinkExtractor(CUrlNormalizer& out)
 : m_out(out)
 , m_pParser(NULL)
 {
