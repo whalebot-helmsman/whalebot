@@ -107,14 +107,14 @@ void CStorageOptions::Load( const boost::property_tree::ptree& properties
 {
     BaseDirectory   =   properties.get("base_dir", defaultBasePath);
 
-    FutureLinksLoadPath     =   properties.get("future_links_file",    "future");
-    VisitedLinksLoadPath    =   properties.get("visited_links_file",   "visited");
+    FutureLinksPath         =   properties.get("future_links_file",    "future");
+    VisitedLinksPath        =   properties.get("visited_links_file",   "visited");
     TmpFilePath             =   properties.get("tmp_file",             "tmp");
     PageStorageDirectory    =   properties.get("pages_dir",            "pages");
     ExtractedUrlsPath       =   properties.get("extracted_links_file", "/dev/null");
 
-    rebasePath(BaseDirectory, FutureLinksLoadPath);
-    rebasePath(BaseDirectory, VisitedLinksLoadPath);
+    rebasePath(BaseDirectory, FutureLinksPath);
+    rebasePath(BaseDirectory, VisitedLinksPath);
     rebasePath(BaseDirectory, TmpFilePath);
     rebasePath(BaseDirectory, PageStorageDirectory);
     rebasePath(BaseDirectory, ExtractedUrlsPath);

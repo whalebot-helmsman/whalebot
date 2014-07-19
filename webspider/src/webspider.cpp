@@ -2,6 +2,7 @@
 
 #include <fstream>
 
+#include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/thread.hpp>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
@@ -10,9 +11,7 @@
 #include <boost/date_time/time_facet.hpp>
 #include <boost/scoped_ptr.hpp>
 
-
-//#include <neon/ne_session.h>
-
+#include <version.h>
 #include <one_fetcher.h>
 #include <link/link_buffer.h>
 #include <link/link_extractor.h>
@@ -21,7 +20,8 @@
 #include <uuid_page_storage.hpp>
 #include <link/filters.h>
 #include <link/url_normalizer.hpp>
-#include <webspider_options.h>
+
+#include <options/options.hpp>
 
 void async_read(bool &stop){
     getchar();
@@ -47,18 +47,36 @@ void signal_catcher(int sgnum)
 
 
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+{
+    std::string seedUri;
+    std::string configPath;
 
- //   ne_sock_init();
+    boost::program_options::options_description desc("Webspider options");
+    desc.add_options()
+            ("help,h",    "show this message")
+            ("version,v", "show version info")
+            ("site,s",    boost::program_options::value<std::string>(&seedUri)->default_value(""),             "seed uri")
+            ("config,c",  boost::program_options::value<std::string>(&configPath)->default_value(".whalebot"), "path to config file");
 
+    boost::program_options::variables_map vm;
+    boost::program_options::store(boost::program_options::parse_command_line(argc, argv, desc), vm);
+    boost::program_options::notify(vm);
 
-
-
-    CWebSpiderOptions   options;
-
-    if (not options.readFromCmdLine(argc, argv)) {
-        return EXIT_FAILURE;
+    if (vm.count("version")) {
+        std::cout   << "WebSpider - tool for statsem package v " << kVersion << " - Beta" << std::endl
+                    << "Author Vostretsov Nikita started 15.03.2009" << std::endl;
+        return false;
     }
+
+    if (vm.count("help")) {
+        std::cout << "Usage: options_description [options]\n";
+        std::cout << desc;
+        return false;
+    }
+
+    CSpiderOptions  options;
+    options.Load(configPath);
 
     boost::asio::io_service             service;
     bool                                isTimeToStop(false);
@@ -66,14 +84,9 @@ int main(int argc, char* argv[]) {
     gStopCondition  =   &isTimeToStop;
     gIoService      =   &service;
 
-    std::string     errorLogPath("/dev/stdout");
-    if (false == options.m_sErrorLogPath.empty()) {
-        errorLogPath    =   options.m_sErrorLogPath;
-    }
-
-    std::ofstream   errorLogFile(errorLogPath.c_str(), std::ios::out|std::ios::app);
+    std::ofstream   errorLogFile(options.Runtime.LogPath.c_str(), std::ios::out|std::ios::app);
     if (false == errorLogFile.is_open()) {
-        std::cout << "Could not open \"" << errorLogPath
+        std::cout << "Could not open \"" << options.Runtime.LogPath
                   << "\" for log file" << std::endl;
         return EXIT_FAILURE;
     }
@@ -122,45 +135,37 @@ int main(int argc, char* argv[]) {
                                   , new boost::posix_time::time_facet("%T") ));
 
     IPageStorage*                   storage =   NULL;
-    if (true == options.m_bIsUseUuidStorage) {
-        storage =   new CUuidPageStorage(options.m_sOutput);
+    if (CStorageOptions::EPageStorageTypeUuid == options.Storage.PageStorageType) {
+        storage =   new CUuidPageStorage(options.Storage.PageStorageDirectory);
     }
     else {
-        storage =   new CFilenameHandler(options.m_sOutput);
+        storage =   new CFilenameHandler(options.Storage.PageStorageDirectory);
     }
     boost::scoped_ptr<IPageStorage> storageGuard(storage);
     COneFetcher                     fetcher(service);
 
-    std::string     linkStoragePath("/dev/null");
-    if (options.m_bCollectLinks) {
-        boost::filesystem::path storagePath(options.m_sOutput);
-        storagePath +=  "rl_links.txt";
-        linkStoragePath =   storagePath.native();
-    }
-
-    CUrlNormalizer  normolizer(linkStoragePath);
+    CUrlNormalizer  normolizer(options.Storage.ExtractedUrlsPath);
 
     CFilterList     filters;
     CLinkBuffer     work_front;
     normolizer.setAcceptor(filters);
     filters.setAcceptor(work_front);
 
-    if(options.m_bOneServer){
+    if (true == options.LinkFilter.IsAllLinksFromOneServer) {
         filters.addFilter(new COneServerFilter());
     }
 
-    if(!options.m_sLinkFilterFile.empty()){
-        std::ifstream   link_file(options.m_sLinkFilterFile.c_str());
-        filters.addFilter(new CIncludeFilter(link_file));
+    if(false == options.LinkFilter.RequiredWordsInLink.empty()){
+        filters.addFilter(new CIncludeFilter(options.LinkFilter.RequiredWordsInLink));
     }
 
-    if(options.m_iLevel > 0){
-        filters.addFilter(new CLevelFilter(options.m_iLevel));
+    if (CLinkFilterOptions::kDoNotRestrictLinkLevel != options.LinkFilter.MaxLinkLevel) {
+        filters.addFilter(new CLevelFilter(options.LinkFilter.MaxLinkLevel));
     }
 
 
-    std::ifstream   usedlinks_file(options.m_sUsedLinksPath.c_str()),
-                    futurelinks_file(options.m_sFutureLinksPath.c_str());
+    std::ifstream   usedlinks_file(options.Storage.VisitedLinksPath.c_str()),
+                    futurelinks_file(options.Storage.FutureLinksPath.c_str());
 
     if(futurelinks_file.is_open()){
         work_front.readFutureLinks(futurelinks_file);
@@ -174,7 +179,7 @@ int main(int argc, char* argv[]) {
         usedlinks_file.clear();
     }
 
-    normolizer.pushLink(options.m_sSite);
+    normolizer.pushLink(seedUri);
 
     CLink   next;
     bool    connected(false);
@@ -182,7 +187,7 @@ int main(int argc, char* argv[]) {
             http_errors(0);
 
 
-    if(CWebSpiderOptions::EInteractiveWorkingMode == options.m_eWorkingMode){
+    if (CRuntimeOptions::EInteractiveWorkingMode == options.Runtime.Mode) {
         boost::thread   t(boost::bind(async_read, boost::ref(isTimeToStop)));
         std::cout<<"*Start working press [ENTER] to stop"<<std::endl;
     }
@@ -191,7 +196,7 @@ int main(int argc, char* argv[]) {
 
     while ((work_front.pop(next))&&(!isTimeToStop)) {
 
-        usleep(options.m_iWaitAfterFetchInMicroseconds);
+        usleep(options.Fetch.WaitAfterFetchInMicroseconds);
 
         if(!next.isValid())
             continue;
@@ -216,7 +221,7 @@ int main(int argc, char* argv[]) {
             errorLogFile << "we have " << http_errors << " errors" << std::endl;
         }
 
-        if(CWebSpiderOptions::EDebugWorkingMode == options.m_eWorkingMode){
+        if (CRuntimeOptions::EDebugWorkingMode == options.Runtime.Mode) {
             char    c;
             std::cout<<"continue?(y/n)"<<std::endl;
             std::cin>>c;
@@ -246,7 +251,7 @@ int main(int argc, char* argv[]) {
             continue;
         }
 
-        std::ofstream tmp(options.m_sTmpFilePath.c_str());
+        std::ofstream tmp(options.Storage.TmpFilePath.c_str());
 
         CHeaderParser header;
         errorLogFile << "\t\tget header " << std::endl;
@@ -282,7 +287,7 @@ int main(int argc, char* argv[]) {
 
         normolizer.setFrom(next);
 
-        if((!CLinkExtractor::isParse(ext))&&(!options.m_bSavePages))
+        if((!CLinkExtractor::isParse(ext))&&(!options.Storage.IsSavePages))
             continue;
 
         errorLogFile << "\t*Get response" << std::endl;
@@ -299,7 +304,7 @@ int main(int argc, char* argv[]) {
         std::string filepath("");
 
 
-        if(options.m_bSavePages){
+        if(options.Storage.IsSavePages){
             if (!storage->createPath(next.getServer(), next.getUri(), ext, filepath)) {
                 errorLogFile << "\t\tcouldnt create dir for " << filepath << std::endl;
                 continue;
@@ -312,13 +317,13 @@ int main(int argc, char* argv[]) {
                     boost::filesystem::remove(filepath);
                 }
 
-                boost::filesystem::copy_file(options.m_sTmpFilePath, filepath);
+                boost::filesystem::copy_file(options.Storage.TmpFilePath, filepath);
             } catch (...) {
-                errorLogFile << "\t\t\tcoudnt copy " << options.m_sTmpFilePath << " to " << filepath << std::endl;
+                errorLogFile << "\t\t\tcoudnt copy " << options.Storage.TmpFilePath << " to " << filepath << std::endl;
                 continue;
             }
         }else{
-            filepath    =   options.m_sTmpFilePath;
+            filepath    =   options.Storage.TmpFilePath;
         }
 
         if (!CLinkExtractor::isParse(ext)) {
@@ -346,19 +351,19 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    if(options.m_bSaveHistory){
+    if (true == options.Storage.IsSaveFutureAndUsedLinks) {
 
         if (not work_front.IsFutureEmpty()) {
-            std::ofstream   futurelinks_endfile(options.m_sFutureLinksPath.c_str());
-            errorLogFile << "saving future links to " << options.m_sFutureLinksPath << std::endl;
+            std::ofstream   futurelinks_endfile(options.Storage.FutureLinksPath.c_str());
+            errorLogFile << "saving future links to " << options.Storage.FutureLinksPath << std::endl;
             work_front.writeFutureLinks(futurelinks_endfile);
             futurelinks_endfile.close();
         }
 
 
         if (not work_front.IsUsedEmpty()) {
-            std::ofstream   usedlinks_endfile(options.m_sUsedLinksPath.c_str());
-            errorLogFile << "saving used links to " << options.m_sUsedLinksPath << std::endl;
+            std::ofstream   usedlinks_endfile(options.Storage.VisitedLinksPath.c_str());
+            errorLogFile << "saving used links to " << options.Storage.VisitedLinksPath << std::endl;
             work_front.writeUsedLinks(usedlinks_endfile);
             usedlinks_endfile.close();
         }
@@ -366,11 +371,9 @@ int main(int argc, char* argv[]) {
     }
 
     errorLogFile << "*Stop working release resourses" << std::endl;
-    if (boost::filesystem::exists(options.m_sTmpFilePath)) {
-        boost::filesystem::remove(options.m_sTmpFilePath);
+    if (boost::filesystem::exists(options.Storage.TmpFilePath)) {
+        boost::filesystem::remove(options.Storage.TmpFilePath);
     }
-
-//    ne_sock_exit();
 
     return EXIT_SUCCESS;
 }

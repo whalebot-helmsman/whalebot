@@ -8,8 +8,8 @@ struct CStorageOptions {
 public:
     std::string BaseDirectory;
 
-    std::string FutureLinksLoadPath;
-    std::string VisitedLinksLoadPath;
+    std::string FutureLinksPath;
+    std::string VisitedLinksPath;
     bool        IsSaveFutureAndUsedLinks;
 
     std::string PageStorageDirectory;

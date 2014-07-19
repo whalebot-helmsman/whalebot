@@ -8,13 +8,13 @@
 #ifndef _FILTERS_H
 #define	_FILTERS_H
 
-#include <list>
-#include <iostream>
-
 #include "filter.h"
 #include "iacceptor.h"
 
+#include <options/options.hpp>
 
+#include <list>
+#include <iostream>
 
 class CAllFilter: public IFilter{
 public:
@@ -32,6 +32,7 @@ private:
 class CIncludeFilter: public IFilter{
 public:
             CIncludeFilter(std::istream &in);
+            CIncludeFilter(const CLinkFilterOptions::CWordList& requiredWords);
     void    addWord(const std::string &incl);
     bool    filtrate(CLink const &link);
 private:

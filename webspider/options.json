@@ -1,0 +1,27 @@
+{
+    "storage" : {
+        "base_dir"             : "/home/hotdox/tmp/whale-test/",
+        "future_links_file"    : "future",
+        "visited_links_file"   : "visited",
+        "tmp_file"             : "tmp",
+        "pages_dir"            : "pages",
+        "extracted_links_file" : "extracted_links",
+        "is_save_links"        : true,
+        "is_save_pages"        : true,
+        "page_storage_type"    : "uuid"
+    },
+
+    "runtime" : {
+        "mode"     : "interactive"
+    },
+
+    "link_filters" : {
+        "one_server" : false,
+        "max_level"  : 1000000,
+        "required"   : ["lenta", "motor"]
+    },
+
+    "fetch" : {
+        "wait" : 1000000
+    }
+}

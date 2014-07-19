@@ -16,6 +16,7 @@ add_executable( whalebot ${SOURCES} )
 target_link_libraries ( whalebot ${Boost_LIBRARIES}
                                  string_parse
                                  pthread
+                                 whale_options
                                  whale_link )
 
 install ( TARGETS whalebot RUNTIME DESTINATION bin CONFIGURATIONS RELEASE )

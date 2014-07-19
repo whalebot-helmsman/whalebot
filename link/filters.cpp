@@ -20,6 +20,11 @@ bool    COneServerFilter::filtrate(CLink const &link){
 void CIncludeFilter::addWord(const std::string &incl){
     this->m_includeWords.push_back(incl);
 }
+CIncludeFilter::CIncludeFilter(const CLinkFilterOptions::CWordList& requiredWords)
+{
+    m_includeWords.assign(requiredWords.begin(), requiredWords.end());
+}
+
 CIncludeFilter::CIncludeFilter(std::istream &in){
     std::string tmp;
     while(in>>tmp){
