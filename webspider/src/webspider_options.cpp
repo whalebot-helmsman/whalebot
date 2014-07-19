@@ -131,7 +131,7 @@ bool CWebSpiderOptions::readFromCmdLine(int argc, char* argv[])
             ("version,v", "show version info")
 
             ("site,s", boost::program_options::value<std::string> (&m_sSite)->default_value(""), "seed uri")
-
+            (kCollectLinksAttrCmd.c_str(), "collect extracted links in raw form")
             (kStorageAttrCmd.c_str(), "is use uuid-based page storage engine with db file")
             (kSavePagesAttrCmd.c_str(), "dont save fetched pages")
             (kOneServerAttrCmd.c_str(), "fetch only from one server")
