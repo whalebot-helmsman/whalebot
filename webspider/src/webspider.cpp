@@ -191,11 +191,13 @@ int main(int argc, char* argv[])
         std::cout<<"*Start working press [ENTER] to stop"<<std::endl;
     }
 
-    boost::posix_time::ptime    start   =   boost::posix_time::microsec_clock::local_time();
+    boost::posix_time::ptime    start       =   boost::posix_time::microsec_clock::local_time();
+    double                      sleepTime   =   0.0;
 
     while ((work_front.pop(next))&&(!isTimeToStop)) {
 
         usleep(options.Fetch.WaitAfterFetchInMicroseconds);
+        sleepTime   +=  options.Fetch.WaitAfterFetchInMicroseconds;
 
         if(!next.isValid())
             continue;
@@ -210,12 +212,21 @@ int main(int argc, char* argv[])
                      << " links, looks at " << link_counter - 1
                      << " links"<< std::endl;
 
+        double  timeConsumed    =   boost::posix_time::time_period(start, now).length().total_microseconds();
+        double  timeToWork      =   timeConsumed - sleepTime;
+        double  consumedSpeed   =   (link_counter - 1) / (timeConsumed / 1000000);
+        double  workSpeed       =   (link_counter - 1) / (timeToWork / 1000000);
 
+        errorLogFile << "speed             "
+                     << std::fixed << std::setw(6) << std::setprecision(3) << consumedSpeed
+                     << " links/sec" << std::endl;
 
+        if (0 != options.Fetch.WaitAfterFetchInMicroseconds) {
+            errorLogFile << "speed w/o waiting "
+                         << std::fixed << std::setw(6) << std::setprecision(3) << workSpeed
+                         << " links/sec" << std::endl;
+        }
 
-        double  time_consumption(boost::posix_time::time_period(start, now).length().total_microseconds());
-        time_consumption    /=  1000000;
-        errorLogFile << "speed " <<(link_counter - 1)/time_consumption<<" links/sec"<<std::endl;
         if (0 != http_errors) {
             errorLogFile << "we have " << http_errors << " errors" << std::endl;
         }
