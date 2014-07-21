@@ -1,12 +1,18 @@
 
 #include <header_parser.h>
 #include <one_fetcher.h>
-#include <link/whale_link.h>
 #include <version.h>
+#include <link/whale_link.h>
+#include <options/options.hpp>
 
 
-COneFetcher::COneFetcher(boost::asio::io_service& service)
-:m_ioService(service),m_socket(m_ioService){}
+COneFetcher::COneFetcher( boost::asio::io_service& service
+                        , const CFetchOptions& options )
+: m_ioService(service)
+, m_socket(m_ioService)
+, m_options(options)
+{}
+
 bool COneFetcher::connect(CLink const &link){
     //add HTTP_0.9
 
@@ -41,6 +47,12 @@ bool COneFetcher::request(CLink const &link){
         request_stream << "GET " <<link.getUri() << " HTTP/1.0\r\n";
         request_stream << "Host: " << link.getServer() << "\r\n";
         request_stream << "Accept: */*\r\n";
+
+        const std::string& referer(link.getReferer());
+        if ((true == m_options.IsUseReferer) && (false == referer.empty())) {
+            request_stream << "Referer: " << referer << "\r\n";
+        }
+
         request_stream << "User-Agent: whalebot " << kVersion << "(http://code.google.com/p/whalebot/wiki/ForAdministrators) \r\n";
         std::string const &cookie(link.getCookieForCut());
         if(!cookie.empty())

@@ -22,7 +22,8 @@
     },
 
     "fetch" : {
-        "wait" : 1000000
+        "wait"           : 1000000,
+        "is_use_referer" : true
     },
 
     "html_extractor" : {

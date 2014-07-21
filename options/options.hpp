@@ -53,6 +53,7 @@ public:
 struct CFetchOptions {
 public:
     unsigned int    WaitAfterFetchInMicroseconds;
+    bool            IsUseReferer;
     void Load(const boost::property_tree::ptree& properties);
 };
 

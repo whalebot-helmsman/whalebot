@@ -141,7 +141,7 @@ int main(int argc, char* argv[])
         storage =   new CFilenameHandler(options.Storage.PageStorageDirectory);
     }
     boost::scoped_ptr<IPageStorage> storageGuard(storage);
-    COneFetcher                     fetcher(service);
+    COneFetcher                     fetcher(service, options.Fetch);
 
     CUrlNormalizer  normolizer(options.Storage.ExtractedUrlsPath);
 

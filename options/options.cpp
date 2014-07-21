@@ -139,6 +139,7 @@ void CLinkFilterOptions::Load(const boost::property_tree::ptree& properties)
 void CFetchOptions::Load(const boost::property_tree::ptree& properties)
 {
     WaitAfterFetchInMicroseconds    =   properties.get("wait", 0);
+    IsUseReferer                    =   properties.get("is_use_referer", false);
 }
 
 void CRuntimeOptions::Load( const boost::property_tree::ptree& properties

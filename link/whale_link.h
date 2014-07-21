@@ -25,6 +25,8 @@ public:
     std::string const & getCookieForCut()const;
     std::string         toString()const;
 
+    std::string const & getReferer()const;
+
     void                setCookie(std::string const &cookie);
     void                setGurl(const GURL& gurl);
     bool                isValid()const;
@@ -36,6 +38,7 @@ private:
     GURL        m_tGurl;
     std::string m_sCookie,
                 m_sCookieForCut;
+    std::string m_sReferer;
 };
 
 std::ostream& operator<<(std::ostream& s,  CLink const & t);

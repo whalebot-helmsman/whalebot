@@ -10,12 +10,14 @@ CLink::CLink()
 : m_tGurl()
 , m_sCookie("")
 , m_sCookieForCut("")
+, m_sReferer("")
 {}
 
 CLink::CLink(const CLink& father, const std::string& relUrl )
 : m_tGurl(father.m_tGurl.Resolve(relUrl))
 , m_sCookie(father.m_sCookie)
 , m_sCookieForCut(father.m_sCookieForCut)
+, m_sReferer(father.toString())
 {}
 
 CLink::CLink( const std::string& url )
@@ -110,4 +112,9 @@ std::istream& operator>>(std::istream& s,  CLink& t){
 bool CLink::operator==(CLink const& another)const{
     return (  (m_tGurl.PathForRequest() == another.m_tGurl.PathForRequest())
            && (m_tGurl.host() == another.m_tGurl.host()) );
+}
+
+std::string const &  CLink::getReferer()const
+{
+    return m_sReferer;
 }
