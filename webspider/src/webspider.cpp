@@ -191,8 +191,9 @@ int main(int argc, char* argv[])
         std::cout<<"*Start working press [ENTER] to stop"<<std::endl;
     }
 
-    boost::posix_time::ptime    start       =   boost::posix_time::microsec_clock::local_time();
-    double                      sleepTime   =   0.0;
+    boost::posix_time::ptime    start           =   boost::posix_time::microsec_clock::local_time();
+    double                      sleepTime       =   0.0;
+    double                      bytesFetched    =   0.0;
 
     while ((work_front.pop(next))&&(!isTimeToStop)) {
 
@@ -214,17 +215,25 @@ int main(int argc, char* argv[])
 
         double  timeConsumed    =   boost::posix_time::time_period(start, now).length().total_microseconds();
         double  timeToWork      =   timeConsumed - sleepTime;
-        double  consumedSpeed   =   (link_counter - 1) / (timeConsumed / 1000000);
-        double  workSpeed       =   (link_counter - 1) / (timeToWork / 1000000);
+        double  mbFetched       =   bytesFetched / (1024 * 1024);
+
+        double  consumedPageSpeed   =   (link_counter - 1) / (timeConsumed / 1000000);
+        double  workPageSpeed       =   (link_counter - 1) / (timeToWork / 1000000);
+        double  consumedMbSpeed     =   mbFetched / (timeConsumed / 1000000);
+        double  workMbSpeed         =   mbFetched / (timeToWork / 1000000);
 
         errorLogFile << "speed             "
-                     << std::fixed << std::setw(6) << std::setprecision(3) << consumedSpeed
-                     << " links/sec" << std::endl;
+                     << std::fixed << std::setw(6) << std::setprecision(3) << consumedPageSpeed
+                     << " links/sec, "
+                     << std::fixed << std::setw(8) << std::setprecision(4) << consumedMbSpeed
+                     << " Mb/sec" << std::endl;
 
         if (0 != options.Fetch.WaitAfterFetchInMicroseconds) {
             errorLogFile << "speed w/o waiting "
-                         << std::fixed << std::setw(6) << std::setprecision(3) << workSpeed
-                         << " links/sec" << std::endl;
+                         << std::fixed << std::setw(6) << std::setprecision(3) << workPageSpeed
+                         << " links/sec, "
+                         << std::fixed << std::setw(8) << std::setprecision(4) << workMbSpeed
+                         << " Mb/sec" << std::endl;
         }
 
         if (0 != http_errors) {
@@ -303,6 +312,8 @@ int main(int argc, char* argv[])
         errorLogFile << "\t*Get response" << std::endl;
 
         bool res(fetcher.getResponse(tmp));
+
+        bytesFetched    +=  tmp.tellp();
 
         if (!res) {
             errorLogFile << "\t\tfailed" << std::endl;
