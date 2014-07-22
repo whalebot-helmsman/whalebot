@@ -95,7 +95,7 @@ unsigned int COneFetcher::getHeader(CHeaderParser &header, std::ostream &out){
         }
 
         // Write whatever content we already have to output.
-        while (response.size() > 0){
+        if (response.size() > 0){
             out << &response ;
          }
 
