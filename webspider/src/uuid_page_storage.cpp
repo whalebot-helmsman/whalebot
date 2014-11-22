@@ -22,7 +22,7 @@ bool CUuidPageStorage::createPath(std::string server, std::string uri, std::stri
     static const unsigned int   kCharsPerLevel  =   2;
 
     std::string     uuid        =   to_string(m_generator());
-    std::string     path        =   m_baseDir;
+    std::string     path        =   "";
     unsigned int    maxLevel    =   uuid.size() / kCharsPerLevel - 1;
     unsigned int    curLevel    =   std::min(maxLevel, m_hierarchicalLevel);
 
@@ -34,14 +34,15 @@ bool CUuidPageStorage::createPath(std::string server, std::string uri, std::stri
         path.append(uuid, level * kCharsPerLevel, kCharsPerLevel);
     }
 
-    bool    ret =   boost::filesystem::exists(path) | boost::filesystem::create_directories(path);
+    std::string fullPath    =   m_baseDir + "/" +path;
+    bool        ret         =   boost::filesystem::exists(fullPath) | boost::filesystem::create_directories(fullPath);
 
     if (false == ret) {
         return false;
     }
 
-    filename    =   path + "/" + uuid;
-    m_linkDb    <<  server << '\t' << uri << '\t' << uuid << std::endl;
+    filename    =   fullPath + "/" + uuid;
+    m_linkDb    <<  server << '\t' << uri << '\t' << path + "/" + uuid << std::endl;
 
     return true;
 }
