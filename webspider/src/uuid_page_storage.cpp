@@ -28,6 +28,9 @@ bool CUuidPageStorage::createPath(std::string server, std::string uri, std::stri
 
     for (unsigned int level = 0; level != curLevel; ++level) {
         path.append("/");
+        if (0 == level) {
+            path.append("_");
+        }
         path.append(uuid, level * kCharsPerLevel, kCharsPerLevel);
     }
 
