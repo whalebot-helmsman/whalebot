@@ -124,6 +124,7 @@ void CStorageOptions::Load( const boost::property_tree::ptree& properties
 
     std::string type    =   properties.get<std::string>("page_storage_type", kStorageTypeMapper[0].Repr);
     PageStorageType     =   StorageTypeFromString(type.c_str());
+    HierarchicalLevel   =   properties.get<unsigned int>("hierarchical_level", 0);
 }
 
 void CLinkFilterOptions::Load(const boost::property_tree::ptree& properties)

@@ -8,7 +8,7 @@
 
 class CUuidPageStorage : public IPageStorage {
 public:
-    CUuidPageStorage(const std::string &base_dir);
+    CUuidPageStorage(const std::string &base_dir, unsigned int hierarchicalLevel);
     bool createPath( std::string server
                    , std::string uri
                    , std::string const &ext
@@ -17,4 +17,5 @@ private:
     std::string                     m_baseDir;
     std::ofstream                   m_linkDb;
     boost::uuids::random_generator  m_generator;
+    unsigned int                    m_hierarchicalLevel;
 };

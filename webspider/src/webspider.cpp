@@ -135,7 +135,8 @@ int main(int argc, char* argv[])
 
     IPageStorage*                   storage =   NULL;
     if (CStorageOptions::EPageStorageTypeUuid == options.Storage.PageStorageType) {
-        storage =   new CUuidPageStorage(options.Storage.PageStorageDirectory);
+        storage =   new CUuidPageStorage( options.Storage.PageStorageDirectory
+                                        , options.Storage.HierarchicalLevel    );
     }
     else {
         storage =   new CFilenameHandler(options.Storage.PageStorageDirectory);

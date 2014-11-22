@@ -18,6 +18,7 @@ public:
         EPageStorageTypeUuid,
         EPageStorageTypeUnknown
     };
+    unsigned int        HierarchicalLevel;
     EPageStorageType    PageStorageType;
     bool                IsSavePages;
 
