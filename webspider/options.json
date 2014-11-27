@@ -12,7 +12,8 @@
     },
 
     "runtime" : {
-        "mode"     : "interactive"
+        "mode"        : "interactive",
+        "save_period" : 3600
     },
 
     "link_filters" : {

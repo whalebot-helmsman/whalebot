@@ -46,6 +46,9 @@ public:
     static EWorkingMode WorkingModeFromString(const char* mode);
     EWorkingMode    Mode;
     std::string     LogPath;
+    unsigned int    StateSavingPeriod;
+
+    static const unsigned int   kDoNotSaveStateDuringCrawl  =   0;
 
     void Load( const boost::property_tree::ptree& properties
              , const std::string&                 basePath );

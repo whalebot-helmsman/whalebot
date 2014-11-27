@@ -216,6 +216,7 @@ int main(int argc, char* argv[])
     }
 
     boost::posix_time::ptime    start           =   boost::posix_time::microsec_clock::local_time();
+    boost::posix_time::ptime    lastStateSaving =   start;
     double                      sleepTime       =   0.0;
     double                      bytesFetched    =   0.0;
 
@@ -231,6 +232,11 @@ int main(int argc, char* argv[])
 
         boost::posix_time::ptime   now   =   boost::posix_time::microsec_clock::local_time();
 
+        if (  (CRuntimeOptions::kDoNotSaveStateDuringCrawl != options.Runtime.StateSavingPeriod)
+           && (static_cast<unsigned int>(boost::posix_time::time_period(lastStateSaving, now).length().total_seconds()) > options.Runtime.StateSavingPeriod) ) {
+            saveState(options, work_front, errorLogFile);
+            lastStateSaving =   now;
+        }
 
         errorLogFile << now
                      << " we have " << work_front.size() + 1
@@ -273,9 +279,6 @@ int main(int argc, char* argv[])
                 continue;
             }
         }
-
-
-
 
         errorLogFile << "*Connect to " << next.getServer() << std::endl;
         connected = fetcher.connect(next);
