@@ -49,21 +49,16 @@ void saveState(const CSpiderOptions& options, const CLinkBuffer& work_front, std
 {
     if (true == options.Storage.IsSaveFutureAndUsedLinks) {
 
-        //TODO: we need to save even empty state
-        if (not work_front.IsFutureEmpty()) {
-            std::ofstream   futurelinks_endfile(options.Storage.FutureLinksPath.c_str());
-            errorLogFile << "saving future links to " << options.Storage.FutureLinksPath << std::endl;
-            work_front.writeFutureLinks(futurelinks_endfile);
-            futurelinks_endfile.close();
-        }
+        std::ofstream   futurelinks_endfile(options.Storage.FutureLinksPath.c_str());
+        errorLogFile << "saving future links to " << options.Storage.FutureLinksPath << std::endl;
+        work_front.writeFutureLinks(futurelinks_endfile);
+        futurelinks_endfile.close();
 
 
-        if (not work_front.IsUsedEmpty()) {
-            std::ofstream   usedlinks_endfile(options.Storage.VisitedLinksPath.c_str());
-            errorLogFile << "saving used links to " << options.Storage.VisitedLinksPath << std::endl;
-            work_front.writeUsedLinks(usedlinks_endfile);
-            usedlinks_endfile.close();
-        }
+        std::ofstream   usedlinks_endfile(options.Storage.VisitedLinksPath.c_str());
+        errorLogFile << "saving used links to " << options.Storage.VisitedLinksPath << std::endl;
+        work_front.writeUsedLinks(usedlinks_endfile);
+        usedlinks_endfile.close();
 
     }
 }
