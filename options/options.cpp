@@ -149,7 +149,9 @@ void CRuntimeOptions::Load( const boost::property_tree::ptree& properties
     std::string mode    =   properties.get<std::string>("mode", kWorkingModeMapper[1].Repr);
     Mode                =   WorkingModeFromString(mode.c_str());
     LogPath             =   properties.get("log_file", "/dev/stdout");
-    StateSavingPeriod   =   properties.get("save_period", kDoNotSaveStateDuringCrawl);
+
+    unsigned int    defaultPeriod   =   kDoNotSaveStateDuringCrawl;
+    StateSavingPeriod   =   properties.get("save_period", defaultPeriod);
 
     rebasePath(basePath, LogPath);
 }
