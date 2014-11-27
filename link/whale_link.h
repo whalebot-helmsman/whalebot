@@ -28,10 +28,16 @@ public:
     std::string const & getReferer()const;
 
     void                setCookie(std::string const &cookie);
+    void                setReferer(const std::string& referer);
     void                setGurl(const GURL& gurl);
     bool                isValid()const;
     void                nil();
     bool                operator==(CLink const& another)const;
+
+    static const char   KHostFieldName[];
+    static const char   KPathFieldName[];
+    static const char   KCookieFieldName[];
+    static const char   KRefererFieldName[];
 
 private:
 

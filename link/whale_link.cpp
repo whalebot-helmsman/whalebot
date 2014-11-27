@@ -1,10 +1,18 @@
 #include <iostream>
+#include <sstream>
 
 #include <boost/algorithm/string.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <boost/property_tree/ptree.hpp>
 
 #include <statsem_string/include/parserbase.h>
 
 #include "whale_link.h"
+
+const char   CLink::KHostFieldName[]    =   "host";
+const char   CLink::KPathFieldName[]    =   "path";
+const char   CLink::KCookieFieldName[]  =   "cookie";
+const char   CLink::KRefererFieldName[] =   "referer";
 
 CLink::CLink()
 : m_tGurl()
@@ -50,6 +58,11 @@ void CLink::setCookie(std::string const &cookie){
     }
 }
 
+void CLink::setReferer(const std::string& referer)
+{
+    m_sReferer  =   referer;
+}
+
 bool CLink::isValid()const{
     return m_tGurl.is_valid();
 }
@@ -73,41 +86,52 @@ void CLink::setGurl(const GURL& gurl)
 }
 
 
-std::ostream& operator<<(std::ostream& s,  CLink const & t){
-    s << "http://" << t.getServer() <<std::endl;
-    s << t.getUri() << std::endl;
-    s << t.getCookie() << std::endl;
+std::ostream& operator << (std::ostream& s,  CLink const & t) {
+    boost::property_tree::ptree urlInJson;
+
+    urlInJson.put(CLink::KHostFieldName, t.getServer());
+    urlInJson.put(CLink::KPathFieldName, t.getUri());
+
+    const std::string&  cookie(t.getCookie());
+    if (false == cookie.empty()) {
+        urlInJson.put(CLink::KCookieFieldName, cookie);
+    }
+
+    const std::string&  referer(t.getReferer());
+    if (false == referer.empty()) {
+        urlInJson.put(CLink::KRefererFieldName, referer);
+    }
+
+    write_json(s, urlInJson, false);
 
     return s;
 }
 
 
-std::istream& operator>>(std::istream& s,  CLink& t){
+std::istream& operator>>(std::istream& s,  CLink& t) {
     t.nil();
 
-    std::string host("");
-    std::string req("");
+    std::string buffer;
 
-    if(not std::getline(s, host)){
+    if (false == std::getline(s, buffer)) {
         return s;
     }
 
-    if(not std::getline(s, req)){
-        return s;
-    }
+    boost::property_tree::ptree urlInJson;
+    std::stringstream           stream(buffer);
 
+    read_json(stream, urlInJson);
 
+    std::string host    =   "http://";
+    host    +=  urlInJson.get<std::string>(CLink::KHostFieldName);
+    std::string path    =   urlInJson.get<std::string>(CLink::KPathFieldName);
+    t.setGurl(GURL(host + path));
 
-    t.setGurl(GURL(host + req));
+    t.setCookie(urlInJson.get(CLink::KCookieFieldName, ""));
+    t.setReferer(urlInJson.get(CLink::KRefererFieldName, ""));
 
-    std::string cookie("");
-
-    if(std::getline(s, cookie)){
-        t.setCookie(cookie);
-    }
 
     return s;
-
 }
 
 bool CLink::operator==(CLink const& another)const{
