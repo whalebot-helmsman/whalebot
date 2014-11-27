@@ -45,6 +45,29 @@ void signal_catcher(int sgnum)
     }
 }
 
+void saveState(const CSpiderOptions& options, const CLinkBuffer& work_front, std::ofstream& errorLogFile)
+{
+    if (true == options.Storage.IsSaveFutureAndUsedLinks) {
+
+        //TODO: we need to save even empty state
+        if (not work_front.IsFutureEmpty()) {
+            std::ofstream   futurelinks_endfile(options.Storage.FutureLinksPath.c_str());
+            errorLogFile << "saving future links to " << options.Storage.FutureLinksPath << std::endl;
+            work_front.writeFutureLinks(futurelinks_endfile);
+            futurelinks_endfile.close();
+        }
+
+
+        if (not work_front.IsUsedEmpty()) {
+            std::ofstream   usedlinks_endfile(options.Storage.VisitedLinksPath.c_str());
+            errorLogFile << "saving used links to " << options.Storage.VisitedLinksPath << std::endl;
+            work_front.writeUsedLinks(usedlinks_endfile);
+            usedlinks_endfile.close();
+        }
+
+    }
+}
+
 
 
 int main(int argc, char* argv[])
@@ -373,24 +396,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    if (true == options.Storage.IsSaveFutureAndUsedLinks) {
-
-        if (not work_front.IsFutureEmpty()) {
-            std::ofstream   futurelinks_endfile(options.Storage.FutureLinksPath.c_str());
-            errorLogFile << "saving future links to " << options.Storage.FutureLinksPath << std::endl;
-            work_front.writeFutureLinks(futurelinks_endfile);
-            futurelinks_endfile.close();
-        }
-
-
-        if (not work_front.IsUsedEmpty()) {
-            std::ofstream   usedlinks_endfile(options.Storage.VisitedLinksPath.c_str());
-            errorLogFile << "saving used links to " << options.Storage.VisitedLinksPath << std::endl;
-            work_front.writeUsedLinks(usedlinks_endfile);
-            usedlinks_endfile.close();
-        }
-
-    }
+    saveState(options, work_front,  errorLogFile);
 
     errorLogFile << "*Stop working release resourses" << std::endl;
     if (boost::filesystem::exists(options.Storage.TmpFilePath)) {
