@@ -197,7 +197,9 @@ int main(int argc, char* argv[])
         usedlinks_file.clear();
     }
 
-    normolizer.pushLink(seedUri);
+    if (false == seedUri.empty()) {
+        normolizer.pushLink(seedUri);
+    }
 
     CLink   next;
     bool    connected(false);
