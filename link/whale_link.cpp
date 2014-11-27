@@ -57,6 +57,7 @@ void CLink::nil(){
     m_tGurl =  GURL::EmptyGURL();
     m_sCookie.clear();
     m_sCookieForCut.clear();
+    m_sReferer.clear();
 }
 
 std::string CLink::toString()const {
