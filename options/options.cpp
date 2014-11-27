@@ -86,7 +86,7 @@ void rebasePath(const std::string& basePath, std::string& partial)
         return;
     }
 
-    rebaseOn    +=  candidate;
+    rebaseOn    /=  candidate;
     partial     =   rebaseOn.native();
 }
 
