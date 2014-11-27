@@ -24,7 +24,7 @@ void CLinkBuffer::writeFutureLinks(std::ostream &fo)const
 void CLinkBuffer::readFutureLinks(std::istream &ui)
 {
     CLink    buff;
-    while(ui >> buff) {
+    while (ui >> buff) {
         m_futureLinks.push_back(buff);
     }
 }
@@ -72,10 +72,16 @@ bool CLinkBuffer::IsUsedEmpty()const
 
 void CLinkBuffer::pushLink(CLink const &link)
 {
-    if (m_usedLinks.find(link) == m_usedLinks.end()) {
-        m_usedLinks.insert(link);
-        m_futureLinks.push_back(link);
+    if (m_usedLinks.find(link) != m_usedLinks.end()) {
+        return;
     }
+
+    CLink toAdd(link);
+    toAdd.setCookie("");
+    toAdd.setReferer("");
+
+    m_usedLinks.insert(toAdd);
+    m_futureLinks.push_back(link);
 }
 
 
