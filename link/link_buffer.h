@@ -10,12 +10,10 @@
 #include "ilink_buffer.h"
 
 
-class IFilter;
 
 
 class CLinkBuffer: public ILinkBuffer{
 public:
-                        //CLinkBuffer(IFilter &server_filter,IFilter &link_filter);
     bool                pop(CLink &top);
     void                pushLink(CLink const &link);
 
