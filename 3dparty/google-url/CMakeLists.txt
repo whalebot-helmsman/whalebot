@@ -3,9 +3,7 @@ project(gurl)
 
 find_package(ICU REQUIRED)
 
-include_directories(${ICU_INCLUDE_DIRS})
-include_directories("./")
-include_directories("./googleurl")
+include_directories("${ICU_INCLUDE_DIRS}")
 
 set (TEST_SOURCES '')
 

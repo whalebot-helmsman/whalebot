@@ -1,7 +1,6 @@
-include_directories( ${WHALEBOT_SRC_ROOT}/3dparty/hubbub-0.1.1/include/
-                     ${WHALEBOT_SRC_ROOT}/3dparty/google-url
-                     ${WHALEBOT_SRC_ROOT}/3dparty/google-url/googleurl
-                     ${WHALEBOT_SRC_ROOT}/3dparty/google-url/googleurl/src )
+find_package(Boost 1.37 REQUIRED program_options)
+
+include_directories(${Boost_INCLUDE_DIRS})
 
 set( SOURCES filters.cpp
              link_buffer.cpp
@@ -13,5 +12,5 @@ set( SOURCES filters.cpp
 add_library(whale_link STATIC ${SOURCES})
 
 target_link_libraries ( whale_link gurl
-                                   ${ICU_LIBRARY}
+                                   ${Boost_LIBRARIES}
                                    hubbub )

@@ -12,6 +12,12 @@ set(EXECUTABLE_OUTPUT_PATH         "${WHALEBOT_BUILD_ROOT}/bin" )
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
+#include directories for 3d-party libs
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/3dparty/google-url
+                     ${CMAKE_CURRENT_SOURCE_DIR}/3dparty/google-url/googleurl
+                     ${CMAKE_CURRENT_SOURCE_DIR}/3dparty/google-url/googleurl/src
+                     ${CMAKE_CURRENT_SOURCE_DIR}/3dparty/hubbub-0.1.1/include )
+
 add_subdirectory( statsem_string )
 add_subdirectory( 3dparty )
 add_subdirectory( webspider )
