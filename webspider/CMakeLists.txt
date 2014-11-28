@@ -2,7 +2,7 @@
                       ${WHALEBOT_SRC_ROOT}/statsem_string/include
                       ${Boost_INCLUDE_DIRS} )
 
-find_package(Boost 1.37 REQUIRED filesystem system thread date_time)
+find_package(Boost 1.37 REQUIRED filesystem program_options system thread date_time)
 
 aux_source_directory("./src/" SOURCES)
 
