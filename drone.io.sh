@@ -1,5 +1,5 @@
-apt-get install libicu-dev
-apt-get install libboost-all-dev
+sudo apt-get install libicu-dev
+sudo apt-get install libboost-all-dev
 
 mkdir -p build/release
 pushd build/release
