@@ -171,7 +171,7 @@ int main(int argc, char* argv[])
     errorLogFile.imbue(std::locale( errorLogFile.getloc()
                                   , new boost::posix_time::time_facet("%T") ));
 
-    IPageStorage*                   storage =   CreateStorage(options.Storage);
+    IPageStorage*                   storage =   CreateStorage(options.Storage.PageStorage);
     boost::scoped_ptr<IPageStorage> storageGuard(storage);
     COneFetcher                     fetcher(service, options.Fetch);
 

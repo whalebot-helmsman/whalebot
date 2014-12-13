@@ -94,13 +94,40 @@ static const boost::property_tree::ptree    kEmptyTree;
 
 struct TStorageTypeToStringMapperCell {
 public:
-    CStorageOptions::EPageStorageType   Value;
-    const char*                         Repr;
+    CPageStorageOptions::EPageStorageType   Value;
+    const char*                             Repr;
 };
 
 
-static const TStorageTypeToStringMapperCell     kStorageTypeMapper[]    =   { {CStorageOptions::EPageStorageTypePlain, "plain"}
-                                                                            , {CStorageOptions::EPageStorageTypeUuid,  "uuid" } };
+static const TStorageTypeToStringMapperCell     kStorageTypeMapper[]    =   { {CPageStorageOptions::EPageStorageTypePlain, "plain"}
+                                                                            , {CPageStorageOptions::EPageStorageTypeUuid,  "uuid" } };
+
+void CUuidPageStorageOptions::Load( const boost::property_tree::ptree& properties
+                                  , const std::string&                 basePath )
+{
+    HierarchicalLevel   =   properties.get<unsigned int>("hierarchical_level", 0);
+    LevelLength         =   properties.get<unsigned int>("level_length",       2);
+    BaseDirectory       =   properties.get("base", "pages");
+
+    rebasePath(basePath, BaseDirectory);
+}
+
+void CPlainPageStorageOptions::Load( const boost::property_tree::ptree& properties
+                                   , const std::string&                 basePath )
+{
+    BaseDirectory   =   properties.get("base", "pages");
+    rebasePath(basePath, BaseDirectory);
+}
+
+void CPageStorageOptions::Load( const boost::property_tree::ptree& properties
+                              , const std::string&                 basePath )
+{
+    Plain.Load(properties.get_child("plain", kEmptyTree), basePath);
+    Uuid.Load(properties.get_child("uuid",   kEmptyTree), basePath);
+
+    std::string type    =   properties.get<std::string>("type", kStorageTypeMapper[0].Repr);
+    Type    =   StorageTypeFromString(type.c_str());
+}
 
 void CStorageOptions::Load( const boost::property_tree::ptree& properties
                           , const std::string&                 defaultBasePath )
@@ -110,21 +137,17 @@ void CStorageOptions::Load( const boost::property_tree::ptree& properties
     FutureLinksPath         =   properties.get("future_links_file",    "future");
     VisitedLinksPath        =   properties.get("visited_links_file",   "visited");
     TmpFilePath             =   properties.get("tmp_file",             "tmp");
-    PageStorageDirectory    =   properties.get("pages_dir",            "pages");
     ExtractedUrlsPath       =   properties.get("extracted_links_file", "/dev/null");
 
     rebasePath(BaseDirectory, FutureLinksPath);
     rebasePath(BaseDirectory, VisitedLinksPath);
     rebasePath(BaseDirectory, TmpFilePath);
-    rebasePath(BaseDirectory, PageStorageDirectory);
     rebasePath(BaseDirectory, ExtractedUrlsPath);
 
     IsSaveFutureAndUsedLinks    =   properties.get("is_save_links", true);
     IsSavePages                 =   properties.get("is_save_pages", true);
 
-    std::string type    =   properties.get<std::string>("page_storage_type", kStorageTypeMapper[0].Repr);
-    PageStorageType     =   StorageTypeFromString(type.c_str());
-    HierarchicalLevel   =   properties.get<unsigned int>("hierarchical_level", 0);
+    PageStorage.Load(properties.get_child("pages", kEmptyTree), BaseDirectory);
 }
 
 void CLinkFilterOptions::Load(const boost::property_tree::ptree& properties)
@@ -193,7 +216,7 @@ static const TStorageTypeToStringMapperCell*    kStorageTypeMapperEnd   =   kSto
 
 struct TByTypeFinder {
 public:
-    TByTypeFinder(CStorageOptions::EPageStorageType type)
+    TByTypeFinder(CPageStorageOptions::EPageStorageType type)
     : Type(type)
     {}
 
@@ -203,10 +226,10 @@ public:
     }
 
 private:
-    CStorageOptions::EPageStorageType   Type;
+    CPageStorageOptions::EPageStorageType   Type;
 };
 
-const char* CStorageOptions::StorageTypeToString(EPageStorageType type)
+const char* CPageStorageOptions::StorageTypeToString(EPageStorageType type)
 {
 
     const TStorageTypeToStringMapperCell* pos =   std::find_if( kStorageTypeMapperBegin
@@ -235,7 +258,7 @@ private:
     const char* Type;
 };
 
-CStorageOptions::EPageStorageType CStorageOptions::StorageTypeFromString(const char* type)
+CPageStorageOptions::EPageStorageType CPageStorageOptions::StorageTypeFromString(const char* type)
 {
 
     const TStorageTypeToStringMapperCell* pos =   std::find_if( kStorageTypeMapperBegin

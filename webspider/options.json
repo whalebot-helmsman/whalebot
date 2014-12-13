@@ -4,11 +4,15 @@
         "future_links_file"    : "future",
         "visited_links_file"   : "visited",
         "tmp_file"             : "tmp",
-        "pages_dir"            : "pages",
+        "pages"                : {
+            "type"  : "plain",
+            "plain" : {
+                "base"                  : "pages2"
+            }
+        },
         "extracted_links_file" : "extracted_links",
         "is_save_links"        : true,
-        "is_save_pages"        : true,
-        "page_storage_type"    : "plain"
+        "is_save_pages"        : true
     },
 
     "runtime" : {

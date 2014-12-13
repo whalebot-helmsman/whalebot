@@ -2,4 +2,4 @@
 #include "ipage_storage.hpp"
 #include <options/options.hpp>
 
-IPageStorage* CreateStorage(const CStorageOptions& options);
+IPageStorage* CreateStorage(const CPageStorageOptions& options);

@@ -4,6 +4,44 @@
 #include <limits>
 #include <boost/property_tree/ptree.hpp>
 
+struct CUuidPageStorageOptions {
+public:
+    unsigned int    HierarchicalLevel;
+    unsigned int    LevelLength;
+    std::string     BaseDirectory;
+
+    void Load( const boost::property_tree::ptree& properties
+             , const std::string&                 basePath );
+};
+
+struct CPlainPageStorageOptions {
+public:
+    std::string     BaseDirectory;
+
+    void Load( const boost::property_tree::ptree& properties
+             , const std::string&                 basePath );
+};
+
+struct CPageStorageOptions {
+public:
+
+    enum EPageStorageType {
+        EPageStorageTypePlain = 0,
+        EPageStorageTypeUuid,
+        EPageStorageTypeUnknown
+    };
+
+    EPageStorageType            Type;
+    CUuidPageStorageOptions     Uuid;
+    CPlainPageStorageOptions    Plain;
+
+    void Load( const boost::property_tree::ptree& properties
+             , const std::string&                 basePath );
+
+    static const char* StorageTypeToString(EPageStorageType type);
+    static EPageStorageType StorageTypeFromString(const char* type);
+};
+
 struct CStorageOptions {
 public:
     std::string BaseDirectory;
@@ -12,15 +50,8 @@ public:
     std::string VisitedLinksPath;
     bool        IsSaveFutureAndUsedLinks;
 
-    std::string PageStorageDirectory;
-    enum EPageStorageType {
-        EPageStorageTypePlain = 0,
-        EPageStorageTypeUuid,
-        EPageStorageTypeUnknown
-    };
-    unsigned int        HierarchicalLevel;
-    EPageStorageType    PageStorageType;
     bool                IsSavePages;
+    CPageStorageOptions PageStorage;
 
     std::string ExtractedUrlsPath;
 
@@ -28,9 +59,6 @@ public:
 
     void Load( const boost::property_tree::ptree& properties
              , const std::string&                 defaultBasePath );
-
-    static const char* StorageTypeToString(EPageStorageType type);
-    static EPageStorageType StorageTypeFromString(const char* type);
 };
 
 struct CRuntimeOptions {
