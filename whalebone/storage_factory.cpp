@@ -5,7 +5,7 @@
 IPageStorage* CreateStorage(const CPageStorageOptions& options)
 {
     IPageStorage*   storage =   NULL;
-    if (CPageStorageOptions::EPageStorageTypeUuid == options.Type) {
+    if (CPageStorageOptions::ETypeUuid == options.Type) {
         storage =   new CUuidPageStorage( options.Uuid.BaseDirectory
                                         , options.Uuid.HierarchicalLevel    );
     }

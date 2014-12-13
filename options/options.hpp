@@ -25,21 +25,21 @@ public:
 struct CPageStorageOptions {
 public:
 
-    enum EPageStorageType {
-        EPageStorageTypePlain = 0,
-        EPageStorageTypeUuid,
-        EPageStorageTypeUnknown
+    enum EType {
+        ETypePlain = 0,
+        ETypeUuid,
+        ETypeUnknown
     };
 
-    EPageStorageType            Type;
+    EType                       Type;
     CUuidPageStorageOptions     Uuid;
     CPlainPageStorageOptions    Plain;
 
     void Load( const boost::property_tree::ptree& properties
              , const std::string&                 basePath );
 
-    static const char* StorageTypeToString(EPageStorageType type);
-    static EPageStorageType StorageTypeFromString(const char* type);
+    static const char* StorageTypeToString(EType type);
+    static EType StorageTypeFromString(const char* type);
 };
 
 struct CStorageOptions {

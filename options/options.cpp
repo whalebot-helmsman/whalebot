@@ -94,13 +94,13 @@ static const boost::property_tree::ptree    kEmptyTree;
 
 struct TStorageTypeToStringMapperCell {
 public:
-    CPageStorageOptions::EPageStorageType   Value;
+    CPageStorageOptions::EType   Value;
     const char*                             Repr;
 };
 
 
-static const TStorageTypeToStringMapperCell     kStorageTypeMapper[]    =   { {CPageStorageOptions::EPageStorageTypePlain, "plain"}
-                                                                            , {CPageStorageOptions::EPageStorageTypeUuid,  "uuid" } };
+static const TStorageTypeToStringMapperCell     kStorageTypeMapper[]    =   { {CPageStorageOptions::ETypePlain, "plain"}
+                                                                            , {CPageStorageOptions::ETypeUuid,  "uuid" } };
 
 void CUuidPageStorageOptions::Load( const boost::property_tree::ptree& properties
                                   , const std::string&                 basePath )
@@ -216,7 +216,7 @@ static const TStorageTypeToStringMapperCell*    kStorageTypeMapperEnd   =   kSto
 
 struct TByTypeFinder {
 public:
-    TByTypeFinder(CPageStorageOptions::EPageStorageType type)
+    TByTypeFinder(CPageStorageOptions::EType type)
     : Type(type)
     {}
 
@@ -226,10 +226,10 @@ public:
     }
 
 private:
-    CPageStorageOptions::EPageStorageType   Type;
+    CPageStorageOptions::EType   Type;
 };
 
-const char* CPageStorageOptions::StorageTypeToString(EPageStorageType type)
+const char* CPageStorageOptions::StorageTypeToString(EType type)
 {
 
     const TStorageTypeToStringMapperCell* pos =   std::find_if( kStorageTypeMapperBegin
@@ -258,7 +258,7 @@ private:
     const char* Type;
 };
 
-CPageStorageOptions::EPageStorageType CPageStorageOptions::StorageTypeFromString(const char* type)
+CPageStorageOptions::EType CPageStorageOptions::StorageTypeFromString(const char* type)
 {
 
     const TStorageTypeToStringMapperCell* pos =   std::find_if( kStorageTypeMapperBegin
@@ -266,7 +266,7 @@ CPageStorageOptions::EPageStorageType CPageStorageOptions::StorageTypeFromString
                                                               , TByTypeReprFinder(type) );
 
     if (kStorageTypeMapperEnd == pos) {
-        return EPageStorageTypeUnknown;
+        return ETypeUnknown;
     }
 
     return pos->Value;
