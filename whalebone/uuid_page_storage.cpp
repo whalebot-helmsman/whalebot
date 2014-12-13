@@ -13,7 +13,7 @@ CUuidPageStorage::CUuidPageStorage( const std::string& base_dir
     }
 
     boost::filesystem::create_directories(m_baseDir);
-    std::string linkDbPath  =   m_baseDir + "/" + "db";
+    std::string linkDbPath  =   m_baseDir + "/" + "_db";
     m_linkDb.open(linkDbPath.c_str(), std::ios::app|std::ios::out);
 }
 
@@ -45,10 +45,6 @@ bool CUuidPageStorage::createPath( const std::string& server
     unsigned int    curLevel    =   std::min(maxLevel, m_hierarchicalLevel);
 
     for (unsigned int level = 0; level != curLevel; ++level) {
-        path.append("/");
-        if (0 == level) {
-            path.append("_");
-        }
         path.append(uuid, level * kCharsPerLevel, kCharsPerLevel);
     }
 
