@@ -16,8 +16,7 @@
 #include <link/link_buffer.h>
 #include <link/link_extractor.h>
 #include <header_parser.h>
-#include <whalebone/filename_handler.h>
-#include <whalebone/uuid_page_storage.hpp>
+#include <whalebone/storage_factory.hpp>
 #include <link/filters.h>
 #include <link/url_normalizer.hpp>
 
@@ -151,14 +150,7 @@ int main(int argc, char* argv[])
     errorLogFile.imbue(std::locale( errorLogFile.getloc()
                                   , new boost::posix_time::time_facet("%T") ));
 
-    IPageStorage*                   storage =   NULL;
-    if (CStorageOptions::EPageStorageTypeUuid == options.Storage.PageStorageType) {
-        storage =   new CUuidPageStorage( options.Storage.PageStorageDirectory
-                                        , options.Storage.HierarchicalLevel    );
-    }
-    else {
-        storage =   new CFilenameHandler(options.Storage.PageStorageDirectory);
-    }
+    IPageStorage*                   storage =   CreateStorage(options.Storage);
     boost::scoped_ptr<IPageStorage> storageGuard(storage);
     COneFetcher                     fetcher(service, options.Fetch);
 
