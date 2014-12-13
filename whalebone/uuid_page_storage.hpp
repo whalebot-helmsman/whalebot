@@ -1,14 +1,16 @@
 #pragma once
 
-#include "ipage_storage.hpp"
+#include <fstream>
 
 #include <boost/uuid/random_generator.hpp>
 
-#include <fstream>
+#include <options/options.hpp>
+
+#include "ipage_storage.hpp"
 
 class CUuidPageStorage : public IPageStorage {
 public:
-    CUuidPageStorage(const std::string &base_dir, unsigned int hierarchicalLevel);
+    CUuidPageStorage(const CUuidPageStorageOptions& options);
 
     bool StoreFile( const std::string& server
                   , const std::string& uri
@@ -21,8 +23,7 @@ private:
                    , const std::string& ext
                    , std::string &filename );
 
-    std::string                     m_baseDir;
     std::ofstream                   m_linkDb;
     boost::uuids::random_generator  m_generator;
-    unsigned int                    m_hierarchicalLevel;
+    CUuidPageStorageOptions         Options;
 };

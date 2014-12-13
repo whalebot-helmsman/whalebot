@@ -3,17 +3,15 @@
 
 #include "uuid_page_storage.hpp"
 
-CUuidPageStorage::CUuidPageStorage( const std::string& base_dir
-                                  , unsigned int       hierarchicalLevel )
-: m_baseDir(base_dir)
-, m_hierarchicalLevel(hierarchicalLevel)
+CUuidPageStorage::CUuidPageStorage(const CUuidPageStorageOptions& options)
+: Options(options)
 {
-    if(m_baseDir[m_baseDir.size() - 1] == '/') {
-        m_baseDir.resize(m_baseDir.size() - 1);
+    if(Options.BaseDirectory[Options.BaseDirectory.size() - 1] == '/') {
+        Options.BaseDirectory.resize(Options.BaseDirectory.size() - 1);
     }
 
-    boost::filesystem::create_directories(m_baseDir);
-    std::string linkDbPath  =   m_baseDir + "/" + "_db";
+    boost::filesystem::create_directories(Options.BaseDirectory);
+    std::string linkDbPath  =   Options.BaseDirectory + "/" + "_db";
     m_linkDb.open(linkDbPath.c_str(), std::ios::app|std::ios::out);
 }
 
@@ -37,19 +35,17 @@ bool CUuidPageStorage::createPath( const std::string& server
                                  , const std::string& ext
                                  , std::string &filename )
 {
-    static const unsigned int   kCharsPerLevel  =   2;
-
     std::string     uuid        =   to_string(m_generator());
     std::string     path        =   "";
-    unsigned int    maxLevel    =   uuid.size() / kCharsPerLevel - 1;
-    unsigned int    curLevel    =   std::min(maxLevel, m_hierarchicalLevel);
+    unsigned int    maxLevel    =   uuid.size() / Options.LevelLength - 1;
+    unsigned int    curLevel    =   std::min(maxLevel, Options.HierarchicalLevel);
 
     for (unsigned int level = 0; level != curLevel; ++level) {
         path    +=  "/";
-        path.append(uuid, level * kCharsPerLevel, kCharsPerLevel);
+        path.append(uuid, level * Options.LevelLength, Options.LevelLength);
     }
 
-    std::string                 fullPath    =   m_baseDir + "/" +path;
+    std::string                 fullPath    =   Options.BaseDirectory + "/" +path;
     boost::system::error_code   error;
     bool                        ret         =   (  (true == boost::filesystem::exists(fullPath))
                                                 || (  (true == boost::filesystem::create_directories(fullPath, error))
