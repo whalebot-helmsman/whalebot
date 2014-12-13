@@ -62,6 +62,27 @@ void saveState(const CSpiderOptions& options, const CLinkBuffer& work_front, std
     }
 }
 
+hubbub_error parseHtml( const std::string&           filepath
+                      , const CHtmlExtractorOptions& options
+                      , CUrlNormalizer&              normolizer)
+{
+
+        std::ifstream file(filepath.c_str());
+
+        if (false == file.is_open()) {
+            return HUBBUB_FILENOTFOUND;
+        }
+
+        CLinkExtractor  extractor(normolizer, options);
+        hubbub_error    parserStatus    =   extractor.init();
+
+        if (HUBBUB_OK != parserStatus) {
+            return parserStatus;
+        }
+
+        parserStatus    =   extractor.extract(file);
+        return parserStatus;
+}
 
 
 int main(int argc, char* argv[])
@@ -338,10 +359,20 @@ int main(int argc, char* argv[])
         tmp.close();
 
 
-        std::string filepath("");
+        if (true == CLinkExtractor::isParse(ext)) {
+            errorLogFile << "\t*Parse html" << std::endl;
+            hubbub_error    parserStatus    =   parseHtml( options.Storage.TmpFilePath
+                                                         , options.HtmlExtractor
+                                                         , normolizer );
+            if (HUBBUB_OK != parserStatus) {
+                errorLogFile << "Error initializing HTML parser \""
+                             << hubbub_error_to_string(parserStatus) << "\""
+                             << std::endl;
+            }
+        }
 
-
-        if(options.Storage.IsSavePages){
+        if (options.Storage.IsSavePages) {
+            std::string filepath    =   "";
             if (!storage->createPath(next.getServer(), next.getUri(), ext, filepath)) {
                 errorLogFile << "\t\tcouldnt create dir for " << filepath << std::endl;
                 continue;
@@ -359,32 +390,6 @@ int main(int argc, char* argv[])
                 errorLogFile << "\t\t\tcoudnt copy " << options.Storage.TmpFilePath << " to " << filepath << std::endl;
                 continue;
             }
-        }else{
-            filepath    =   options.Storage.TmpFilePath;
-        }
-
-        if (!CLinkExtractor::isParse(ext)) {
-            continue;
-        }
-
-        errorLogFile << "\t*Parse " << filepath << std::endl;
-        std::ifstream f(filepath.c_str());
-
-        CLinkExtractor  extractor(normolizer, options.HtmlExtractor);
-        hubbub_error    parserStatus    =   extractor.init();
-
-        if (HUBBUB_OK != parserStatus) {
-            errorLogFile << "Error initializing HTML parser \""
-                         << hubbub_error_to_string(parserStatus) << "\""
-                         << std::endl;
-            continue;
-        }
-
-        parserStatus    =   extractor.extract(f);
-        if (HUBBUB_OK != parserStatus) {
-            errorLogFile << "Error parsing HTML \""
-                         << hubbub_error_to_string(parserStatus) << "\""
-                         << std::endl;
         }
     }
 
