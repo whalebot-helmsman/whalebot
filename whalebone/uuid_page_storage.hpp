@@ -9,9 +9,9 @@
 class CUuidPageStorage : public IPageStorage {
 public:
     CUuidPageStorage(const std::string &base_dir, unsigned int hierarchicalLevel);
-    bool createPath( std::string server
-                   , std::string uri
-                   , std::string const &ext
+    bool createPath( const std::string& server
+                   , const std::string& uri
+                   , const std::string& ext
                    , std::string &filename );
 private:
     std::string                     m_baseDir;

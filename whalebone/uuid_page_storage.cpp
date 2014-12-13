@@ -17,7 +17,10 @@ CUuidPageStorage::CUuidPageStorage( const std::string& base_dir
     m_linkDb.open(linkDbPath.c_str(), std::ios::app|std::ios::out);
 }
 
-bool CUuidPageStorage::createPath(std::string server, std::string uri, std::string const &ext, std::string &filename)
+bool CUuidPageStorage::createPath( const std::string& server
+                                 , const std::string& uri
+                                 , const std::string& ext
+                                 , std::string &filename )
 {
     static const unsigned int   kCharsPerLevel  =   2;
 

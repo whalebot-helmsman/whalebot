@@ -10,7 +10,10 @@ CFilenameHandler::CFilenameHandler(const std::string &base_dir)
     if(m_baseDir[m_baseDir.size() - 1] != '/')
         m_baseDir  +=  "/";
 }
-bool CFilenameHandler::createPath(std::string server, std::string uri, std::string const &ext, std::string &filename)
+bool CFilenameHandler::createPath( const std::string& server
+                                 , const std::string& uri
+                                 , const std::string& ext
+                                 , std::string &filename )
 {
     bool        ret(false);
     std::string name("index.html");
@@ -22,25 +25,26 @@ bool CFilenameHandler::createPath(std::string server, std::string uri, std::stri
 
 
 
-    if(!uri.empty()){
+    std::string uriCopy =   uri;
+    if(!uriCopy.empty()){
 
-        boost::replace_all(uri, "+", "_");
-        boost::replace_all(uri, "(", "_");
-        boost::replace_all(uri, ")", "_");
-        boost::replace_all(uri, "&", "_");
-        boost::replace_all(uri, "?", "_");
-        boost::replace_all(uri, "%", "_");
-        boost::replace_all(uri, "=", "_");
+        boost::replace_all(uriCopy, "+", "_");
+        boost::replace_all(uriCopy, "(", "_");
+        boost::replace_all(uriCopy, ")", "_");
+        boost::replace_all(uriCopy, "&", "_");
+        boost::replace_all(uriCopy, "?", "_");
+        boost::replace_all(uriCopy, "%", "_");
+        boost::replace_all(uriCopy, "=", "_");
 
         //generate name
-        if(*uri.rbegin()=='/') {
+        if(*uriCopy.rbegin()=='/') {
             //only directory
-            filename    +=  uri;
+            filename    +=  uriCopy;
         }else{
             //include name of file
-            size_t  pos(uri.rfind('/'));
-            name        =   uri.substr(pos + 1);
-            filename    +=  uri.substr(0, pos + 1);
+            size_t  pos(uriCopy.rfind('/'));
+            name        =   uriCopy.substr(pos + 1);
+            filename    +=  uriCopy.substr(0, pos + 1);
         }
 
         //add extension to name
