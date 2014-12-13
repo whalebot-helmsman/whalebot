@@ -52,8 +52,11 @@ bool CUuidPageStorage::createPath( const std::string& server
         path.append(uuid, level * kCharsPerLevel, kCharsPerLevel);
     }
 
-    std::string fullPath    =   m_baseDir + "/" +path;
-    bool        ret         =   boost::filesystem::exists(fullPath) | boost::filesystem::create_directories(fullPath);
+    std::string                 fullPath    =   m_baseDir + "/" +path;
+    boost::system::error_code   error;
+    bool                        ret         =   (  (true == boost::filesystem::exists(fullPath))
+                                                || (  (true == boost::filesystem::create_directories(fullPath, error))
+                                                   && (0 == error.value()) ) );
 
     if (false == ret) {
         return false;
