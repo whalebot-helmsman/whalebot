@@ -13,6 +13,7 @@ target_link_libraries ( whalebot ${Boost_LIBRARIES}
                                  string_parse
                                  pthread
                                  whale_options
-                                 whale_link )
+                                 whale_link
+                                 whalebone )
 
 install ( TARGETS whalebot RUNTIME DESTINATION bin CONFIGURATIONS RELEASE )

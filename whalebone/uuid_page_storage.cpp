@@ -1,7 +1,7 @@
-#include <uuid_page_storage.hpp>
-
 #include <boost/filesystem/convenience.hpp>
 #include <boost/uuid/uuid_io.hpp>
+
+#include "uuid_page_storage.hpp"
 
 CUuidPageStorage::CUuidPageStorage( const std::string& base_dir
                                   , unsigned int       hierarchicalLevel )

@@ -16,8 +16,8 @@
 #include <link/link_buffer.h>
 #include <link/link_extractor.h>
 #include <header_parser.h>
-#include <filename_handler.h>
-#include <uuid_page_storage.hpp>
+#include <whalebone/filename_handler.h>
+#include <whalebone/uuid_page_storage.hpp>
 #include <link/filters.h>
 #include <link/url_normalizer.hpp>
 
