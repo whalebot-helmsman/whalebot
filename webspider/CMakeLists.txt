@@ -4,7 +4,9 @@
 
 find_package(Boost 1.37 REQUIRED filesystem program_options system thread date_time)
 
-aux_source_directory("./src/" SOURCES)
+set( SOURCES src/header_parser.cpp
+             src/one_fetcher.cpp
+             src/webspider.cpp )
 
 list ( APPEND CMAKE_CXX_FLAGS "-Wall")
 
