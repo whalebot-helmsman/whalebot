@@ -1,7 +1,5 @@
-
-
 #include <boost/algorithm/string/replace.hpp>
-#include <boost/filesystem/convenience.hpp>
+#include <boost/filesystem.hpp>
 
 #include "filename_handler.h"
 
@@ -10,6 +8,22 @@ CFilenameHandler::CFilenameHandler(const std::string &base_dir)
     if(m_baseDir[m_baseDir.size() - 1] != '/')
         m_baseDir  +=  "/";
 }
+
+bool CFilenameHandler::StoreFile( const std::string& server
+                                , const std::string& uri
+                                , const std::string& ext
+                                , const std::string& filename )
+{
+    std::string resultPath      =   "";
+    bool        isPathCreated   =   createPath(server, uri, ext, resultPath);
+    if (false == isPathCreated) {
+        return false;
+    }
+    boost::system::error_code   error;
+    boost::filesystem::rename(filename, resultPath, error);
+    return error.value() == 0;
+}
+
 bool CFilenameHandler::createPath( const std::string& server
                                  , const std::string& uri
                                  , const std::string& ext

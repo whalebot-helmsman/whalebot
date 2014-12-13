@@ -372,23 +372,14 @@ int main(int argc, char* argv[])
         }
 
         if (options.Storage.IsSavePages) {
-            std::string filepath    =   "";
-            if (!storage->createPath(next.getServer(), next.getUri(), ext, filepath)) {
-                errorLogFile << "\t\tcouldnt create dir for " << filepath << std::endl;
-                continue;
-            }
+            errorLogFile << "\t\twrite page" << std::endl;
+            bool    isStored    =   storage->StoreFile( next.getServer()
+                                                      , next.getUri()
+                                                      , ext
+                                                      , options.Storage.TmpFilePath );
 
-            errorLogFile << "\t\twrite to " << filepath << std::endl;
-            try {
-
-                if (boost::filesystem::exists(filepath)) {
-                    boost::filesystem::remove(filepath);
-                }
-
-                boost::filesystem::copy_file(options.Storage.TmpFilePath, filepath);
-            } catch (...) {
-                errorLogFile << "\t\t\tcoudnt copy " << options.Storage.TmpFilePath << " to " << filepath << std::endl;
-                continue;
+            if (false == isStored) {
+                errorLogFile << "\t\t\tcoudnt store \"" << options.Storage.TmpFilePath << "\"" << std::endl;
             }
         }
     }

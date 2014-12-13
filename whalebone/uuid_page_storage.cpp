@@ -1,4 +1,4 @@
-#include <boost/filesystem/convenience.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
 #include "uuid_page_storage.hpp"
@@ -15,6 +15,21 @@ CUuidPageStorage::CUuidPageStorage( const std::string& base_dir
     boost::filesystem::create_directories(m_baseDir);
     std::string linkDbPath  =   m_baseDir + "/" + "db";
     m_linkDb.open(linkDbPath.c_str(), std::ios::app|std::ios::out);
+}
+
+bool CUuidPageStorage::StoreFile( const std::string& server
+                                , const std::string& uri
+                                , const std::string& ext
+                                , const std::string& filename )
+{
+    std::string resultPath      =   "";
+    bool        isPathCreated   =   createPath(server, uri, ext, resultPath);
+    if (false == isPathCreated) {
+        return false;
+    }
+    boost::system::error_code   error;
+    boost::filesystem::rename(filename, resultPath, error);
+    return error.value() == 0;
 }
 
 bool CUuidPageStorage::createPath( const std::string& server

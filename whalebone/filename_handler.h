@@ -13,11 +13,18 @@
 class CFilenameHandler : public IPageStorage {
 public:
     CFilenameHandler(const std::string &base_dir);
+
+    bool StoreFile( const std::string& server
+                  , const std::string& uri
+                  , const std::string& ext
+                  , const std::string& filename );
+
+private:
     bool createPath( const std::string& server
                    , const std::string& uri
                    , const std::string& ext
                    , std::string &filename );
-private:
+
     std::string m_baseDir;
 
 };
