@@ -99,8 +99,9 @@ public:
 };
 
 
-static const TStorageTypeToStringMapperCell     kStorageTypeMapper[]    =   { {CPageStorageOptions::ETypePlain, "plain"}
-                                                                            , {CPageStorageOptions::ETypeUuid,  "uuid" } };
+static const TStorageTypeToStringMapperCell     kStorageTypeMapper[]    =   { {CPageStorageOptions::ETypePlain,   "plain"   }
+                                                                            , {CPageStorageOptions::ETypeUuid,    "uuid"    }
+                                                                            , {CPageStorageOptions::ETypeLevelDb, "leveldb" } };
 
 void CUuidPageStorageOptions::Load( const boost::property_tree::ptree& properties
                                   , const std::string&                 basePath )
@@ -118,8 +119,9 @@ void CLevelDbPageStorageOptions::Load( const boost::property_tree::ptree& proper
     DatabaseFile        =   properties.get("database", "pages");
     rebasePath(basePath, DatabaseFile);
 
-    IsCompress          =   properties.get("is_compress", true);
-    IsSynchronyze       =   properties.get("is_sync",     false);
+    IsCompress          =   properties.get("is_compress",   true);
+    IsSynchronyze       =   properties.get("is_sync",       false);
+    MaxFileSize         =   properties.get("max_file_size", uintmax_t(1024 * 1024));//1Mb
 }
 
 void CPlainPageStorageOptions::Load( const boost::property_tree::ptree& properties

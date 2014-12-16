@@ -5,7 +5,7 @@
         "visited_links_file"   : "visited",
         "tmp_file"             : "tmp",
         "pages"                : {
-            "type"  : "plain",
+            "type"  : "leveldb",
             "plain" : {
                 "base"                  : "pages2"
             }

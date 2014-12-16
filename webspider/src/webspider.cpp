@@ -172,7 +172,13 @@ int main(int argc, char* argv[])
                                   , new boost::posix_time::time_facet("%T") ));
 
     IPageStorage*                   storage =   CreateStorage(options.Storage.PageStorage);
+    if (NULL == storage) {
+        errorLogFile << "Couldn't open storage" << std::endl;
+        return EXIT_FAILURE;
+    }
+
     boost::scoped_ptr<IPageStorage> storageGuard(storage);
+
     COneFetcher                     fetcher(service, options.Fetch);
 
     CUrlNormalizer  normolizer(options.Storage.ExtractedUrlsPath);

@@ -113,7 +113,7 @@ std::istream& operator>>(std::istream& s,  CLink& t) {
 
     std::string buffer;
 
-    if (std::getline(s, buffer)) {
+    if (false == std::getline(s, buffer)) {
         return s;
     }
 

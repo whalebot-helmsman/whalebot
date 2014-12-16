@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 
+//TODO: add init method which one can return error
 class IPageStorage {
 public:
     virtual bool StoreFile( const std::string& server

@@ -2,6 +2,8 @@
 #include <string>
 #include <vector>
 #include <limits>
+
+#include <boost/cstdint.hpp>
 #include <boost/property_tree/ptree.hpp>
 
 struct CUuidPageStorageOptions {
@@ -27,6 +29,7 @@ public:
     std::string DatabaseFile;
     bool        IsCompress;
     bool        IsSynchronyze;
+    uintmax_t   MaxFileSize;
 
     void Load( const boost::property_tree::ptree& properties
              , const std::string&                 basePath );
