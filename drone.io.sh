@@ -1,3 +1,4 @@
+sudo apt-get install libleveldb-dev
 sudo apt-get install libicu-dev
 sudo apt-get install libboost-all-dev
 
