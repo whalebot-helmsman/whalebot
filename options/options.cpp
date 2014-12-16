@@ -112,6 +112,16 @@ void CUuidPageStorageOptions::Load( const boost::property_tree::ptree& propertie
     rebasePath(basePath, BaseDirectory);
 }
 
+void CLevelDbPageStorageOptions::Load( const boost::property_tree::ptree& properties
+                                     , const std::string&                 basePath )
+{
+    DatabaseFile        =   properties.get("database", "pages");
+    rebasePath(basePath, DatabaseFile);
+
+    IsCompress          =   properties.get("is_compress", true);
+    IsSynchronyze       =   properties.get("is_sync",     false);
+}
+
 void CPlainPageStorageOptions::Load( const boost::property_tree::ptree& properties
                                    , const std::string&                 basePath )
 {
@@ -122,8 +132,9 @@ void CPlainPageStorageOptions::Load( const boost::property_tree::ptree& properti
 void CPageStorageOptions::Load( const boost::property_tree::ptree& properties
                               , const std::string&                 basePath )
 {
-    Plain.Load(properties.get_child("plain", kEmptyTree), basePath);
-    Uuid.Load(properties.get_child("uuid",   kEmptyTree), basePath);
+    Plain.Load(properties.get_child("plain",     kEmptyTree), basePath);
+    Uuid.Load(properties.get_child("uuid",       kEmptyTree), basePath);
+    LevelDb.Load(properties.get_child("leveldb", kEmptyTree), basePath);
 
     std::string type    =   properties.get<std::string>("type", kStorageTypeMapper[0].Repr);
     Type    =   StorageTypeFromString(type.c_str());

@@ -22,18 +22,30 @@ public:
              , const std::string&                 basePath );
 };
 
+struct CLevelDbPageStorageOptions {
+public:
+    std::string DatabaseFile;
+    bool        IsCompress;
+    bool        IsSynchronyze;
+
+    void Load( const boost::property_tree::ptree& properties
+             , const std::string&                 basePath );
+};
+
 struct CPageStorageOptions {
 public:
 
     enum EType {
         ETypePlain = 0,
         ETypeUuid,
+        ETypeLevelDb,
         ETypeUnknown
     };
 
     EType                       Type;
     CUuidPageStorageOptions     Uuid;
     CPlainPageStorageOptions    Plain;
+    CLevelDbPageStorageOptions  LevelDb;
 
     void Load( const boost::property_tree::ptree& properties
              , const std::string&                 basePath );
