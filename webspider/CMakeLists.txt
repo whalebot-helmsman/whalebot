@@ -13,7 +13,6 @@ list ( APPEND CMAKE_CXX_FLAGS "-Wall")
 add_executable( whalebot ${SOURCES} )
 target_link_libraries ( whalebot ${Boost_LIBRARIES}
                                  string_parse
-                                 pthread
                                  whale_options
                                  whale_link
                                  whalebone )
