@@ -3,6 +3,7 @@
 #include <options/options.hpp>
 
 #include <leveldb/db.h>
+#include <boost/program_options.hpp>
 #include <boost/scoped_ptr.hpp>
 
 #include <iostream>
@@ -17,14 +18,29 @@ public:
     std::string             TmpFilePath;
 };
 
-int main() {
+int main(int argc, char* argv[]) {
     TLevelDbReaderOptions           options;
-    options.InputPath                   =   "/home/hotdox/tmp/whale-test/pages/";
+    //TODO: calculate hierarchical options of uuid page storage using size of leveldb storage
     options.Output.HierarchicalLevel    =   3;
     options.Output.LevelLength          =   2;
-    options.Output.BaseDirectory        =   "/home/hotdox/tmp/hierarchical/";
-    options.ProgressChunk               =   100;
-    options.TmpFilePath                 =   "/home/hotdox/tmp/tmp";
+
+    boost::program_options::options_description desc("leveldb converter options");
+    desc.add_options()
+            ("help,h",     "show this message")
+            ("input,i",    boost::program_options::value<std::string>(&options.InputPath)->default_value("")->required(),            "path to leveldb storage")
+            ("output,o",   boost::program_options::value<std::string>(&options.Output.BaseDirectory)->default_value("")->required(), "path to new uuid storage")
+            ("tmp-file,t", boost::program_options::value<std::string>(&options.TmpFilePath)->default_value("tmp"),                   "path to tmp file")
+            ("progress,p", boost::program_options::value<unsigned int>(&options.ProgressChunk)->default_value(1000),                 "show progress messages every X records");
+
+    boost::program_options::variables_map vm;
+    boost::program_options::store(boost::program_options::parse_command_line(argc, argv, desc), vm);
+    boost::program_options::notify(vm);
+
+    if (vm.count("help")) {
+        std::cout << "Usage: options_description [options]\n";
+        std::cout << desc;
+        return EXIT_SUCCESS;
+    }
 
     boost::scoped_ptr<leveldb::DB>  db(NULL);
     leveldb::Options                openOptions;
