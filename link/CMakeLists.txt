@@ -13,4 +13,5 @@ add_library(whale_link STATIC ${SOURCES})
 
 target_link_libraries ( whale_link gurl
                                    ${Boost_LIBRARIES}
-                                   hubbub )
+                                   hubbub
+                                   string_parse )

@@ -1,4 +1,4 @@
-find_package(Boost 1.37 REQUIRED filesystem)
+find_package(Boost 1.37 REQUIRED filesystem system)
 find_package(leveldb REQUIRED)
 find_package(SNAPPY REQUIRED)
 
