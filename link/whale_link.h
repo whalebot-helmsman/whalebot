@@ -29,6 +29,8 @@ public:
 
     std::string const & getReferer()const;
 
+    const std::string&  getSpec()const;
+
     void                setCookie(std::string const &cookie);
     void                setReferer(const std::string& referer);
     void                setGurl(const GURL& gurl);
@@ -36,8 +38,7 @@ public:
     void                nil();
     bool                operator==(CLink const& another)const;
 
-    static const char   KHostFieldName[];
-    static const char   KPathFieldName[];
+    static const char   KSpecFieldName[];
     static const char   KCookieFieldName[];
     static const char   KRefererFieldName[];
 

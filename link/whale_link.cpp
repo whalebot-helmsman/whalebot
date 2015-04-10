@@ -9,8 +9,7 @@
 
 #include "whale_link.h"
 
-const char   CLink::KHostFieldName[]    =   "host";
-const char   CLink::KPathFieldName[]    =   "path";
+const char   CLink::KSpecFieldName[]    =   "spec";
 const char   CLink::KCookieFieldName[]  =   "cookie";
 const char   CLink::KRefererFieldName[] =   "referer";
 
@@ -76,6 +75,11 @@ void CLink::setReferer(const std::string& referer)
     m_sReferer  =   referer;
 }
 
+const std::string& CLink::getSpec()const
+{
+    return m_tGurl.possibly_invalid_spec();
+}
+
 bool CLink::isValid()const{
     return m_tGurl.is_valid();
 }
@@ -87,10 +91,7 @@ void CLink::nil(){
 }
 
 std::string CLink::toString()const {
-    std::string ret("http://");
-    ret +=  getServer();
-    ret +=  getUri();
-    return ret;
+    return m_tGurl.possibly_invalid_spec();
 }
 
 void CLink::setGurl(const GURL& gurl)
@@ -102,8 +103,7 @@ void CLink::setGurl(const GURL& gurl)
 std::ostream& operator << (std::ostream& s,  CLink const & t) {
     boost::property_tree::ptree urlInJson;
 
-    urlInJson.put(CLink::KHostFieldName, t.getServer());
-    urlInJson.put(CLink::KPathFieldName, t.getUri());
+    urlInJson.put(CLink::KSpecFieldName, t.getSpec());
 
     const std::string&  cookie(t.getCookie());
     if (false == cookie.empty()) {
@@ -135,10 +135,8 @@ std::istream& operator>>(std::istream& s,  CLink& t) {
 
     read_json(stream, urlInJson);
 
-    std::string host    =   "http://";
-    host    +=  urlInJson.get<std::string>(CLink::KHostFieldName);
-    std::string path    =   urlInJson.get<std::string>(CLink::KPathFieldName);
-    t.setGurl(GURL(host + path));
+    std::string spec    =   urlInJson.get<std::string>(CLink::KSpecFieldName);
+    t.setGurl(GURL(spec));
 
     t.setCookie(urlInJson.get(CLink::KCookieFieldName, ""));
     t.setReferer(urlInJson.get(CLink::KRefererFieldName, ""));
