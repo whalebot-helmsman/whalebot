@@ -48,6 +48,19 @@ std::string const &CLink::getCookieForCut()const{
     return m_sCookieForCut;
 }
 
+std::string CLink::getPortOrScheme()const
+{
+    if (m_tGurl.has_port()) {
+        return m_tGurl.port();
+    }
+
+    if (m_tGurl.has_scheme()) {
+        return m_tGurl.scheme();
+    }
+
+    return "";
+}
+
 void CLink::setCookie(std::string const &cookie){
     m_sCookie    =   cookie;
     if(!m_sCookie.empty()){

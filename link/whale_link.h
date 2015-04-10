@@ -25,6 +25,8 @@ public:
     std::string const & getCookieForCut()const;
     std::string         toString()const;
 
+    std::string         getPortOrScheme()const;
+
     std::string const & getReferer()const;
 
     void                setCookie(std::string const &cookie);
