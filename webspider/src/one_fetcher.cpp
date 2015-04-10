@@ -19,7 +19,8 @@ bool COneFetcher::connect(CLink const &link){
     bool	ret(false);
     try{
         boost::asio::ip::tcp::resolver              resolver(m_ioService);
-        boost::asio::ip::tcp::resolver::query       query(link.getServer(), "http");
+        boost::asio::ip::tcp::resolver::query       query( link.getServer()
+                                                         , link.getPortOrScheme() );
         boost::asio::ip::tcp::resolver::iterator    endpoint_iterator = resolver.resolve(query);
         boost::asio::ip::tcp::resolver::iterator    end;
         boost::system::error_code                   error   =   boost::asio::error::host_not_found;
