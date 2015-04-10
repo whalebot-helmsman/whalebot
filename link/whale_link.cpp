@@ -148,8 +148,15 @@ std::istream& operator>>(std::istream& s,  CLink& t) {
 }
 
 bool CLink::operator==(CLink const& another)const{
-    return (  (m_tGurl.PathForRequest() == another.m_tGurl.PathForRequest())
-           && (m_tGurl.host() == another.m_tGurl.host()) );
+    if ((m_tGurl.has_ref() == another.m_tGurl.has_ref()) && (false == m_tGurl.has_ref())) {
+        return m_tGurl == another.m_tGurl;
+    }
+
+    return (  (m_tGurl.PathForRequest()   == another.m_tGurl.PathForRequest())
+           && (m_tGurl.host()             == another.m_tGurl.host())
+           && (m_tGurl.has_scheme()       == another.m_tGurl.has_scheme())
+           && ((m_tGurl.has_scheme() == false) || ((true == m_tGurl.has_scheme()) && (m_tGurl.scheme() == another.m_tGurl.scheme())))
+           && (m_tGurl.EffectiveIntPort() == another.m_tGurl.EffectiveIntPort()) );
 }
 
 std::string const &  CLink::getReferer()const
